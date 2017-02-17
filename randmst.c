@@ -3,15 +3,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <sys/time.h>
-
-typedef struct edge {
-	double weight;
-	int** coords;
-} edge;
-
-typedef struct node {
-
-} node;
+#include "randmst.h"
 
 int main(int argc, char** argv) {
 	int flag = atoi(argv[1]);
