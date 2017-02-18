@@ -7,9 +7,14 @@ typedef struct edge {
 	double weight;
 } edge;
 
+typedef struct vertex {
+	double* coords;
+} vertex;
+
 typedef struct graph {
 	int num_vertices, num_edges;
 	edge* edges;
+	vertex* vertices;
 } graph;
 
 //Nodes for disjoint set data structure
