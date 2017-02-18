@@ -12,7 +12,6 @@ node* find(node* cur_node) {
 	if (cur_node != cur_node->parent) {
 		cur_node->parent = find(cur_node->parent);
 	}
-
 	return cur_node->parent;
 }
 
