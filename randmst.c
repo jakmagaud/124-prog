@@ -95,7 +95,15 @@ graph* graph_generator(int num_pts, int num_trials, int dim) {
 	return g;
 }
 
+int edge_comp(const void* a, const void* b) {
+	edge* e1 = (edge*) a;
+	edge* e2 = (edge*) b;
+	return e1->weight > e2->weight;
+}
+
 void kruskal(graph* g) {
+	//sort edges according to weight in ascending order
+	qsort(g->edges, g->num_edges, sizeof(edge), edge_comp);
 
 }
 
