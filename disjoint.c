@@ -3,9 +3,11 @@
 #include <stdbool.h>
 #include "randmst.h"
 
-void make_set(node* n) {
-	n->parent = n;
+node* make_set(node s) {
+	node* n = malloc(sizeof(node))
+	n->parent = s;
 	n->rank = 0;
+	return n;
 }
 
 node* find(node* cur_node) {

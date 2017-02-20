@@ -101,11 +101,39 @@ int edge_comp(const void* a, const void* b) {
 	return e1->weight > e2->weight;
 }
 
-void kruskal(graph* g) {
+edge* kruskal(graph* g) {
 	//sort edges according to weight in ascending order
 	qsort(g->edges, g->num_edges, sizeof(edge), edge_comp);
+	edge* MST_edges = malloc(sizeof(edge) * (g->num_vertices - 1));
+	node* sets = malloc(sizeof(node) * g->num_vertices);
+	int curr_edge_index = 0;
 
+	for (int i = 0; i < g->num_vertices; i++){
+		sets[i] = make_set(g->vertices[i]);
+	}
+
+	for (int i = 0; i < g->num_edges; i++){
+		if find(g->edges[i].startpoint) != find(g->edges[i].endpoint){
+			MST_edges[curr_edge_index] = g->edges[i];
+			curr_edge_index += 1;
+			disj_union(sets[g->edges[i].startpoint], sets[g->edges[i].endpoint]);
+		}
+	}
+	return MST_edges;
 }
+
+
+
+void set_coords(graph* g, int dim) {
+	g->vertices = malloc(sizeof(vertex) * g->num_vertices);
+	for (int i = 0; i < g->num_vertices; i++) {
+		g->vertices[i].coords = malloc(sizeof(double) * dim);
+		for (int j = 0; j < dim; j++) {
+			g->vertices[i].coords[j] = rng();
+		}
+	}
+}
+
 
 int main(int argc, char** argv) {
 	int flag = atoi(argv[1]);
