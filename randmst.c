@@ -130,6 +130,7 @@ edge* kruskal(graph* g) {
 
 
 int main(int argc, char** argv) {
+	//flag options: 0 for no extra stuff, 1 for timing
 	int flag = atoi(argv[1]);
 	int num_pts = atoi(argv[2]);
 	int num_trials = atoi(argv[3]);
@@ -143,12 +144,14 @@ int main(int argc, char** argv) {
 
 	for (int i = 0; i < num_trials; i++) {
 		graph* g = graph_generator(num_pts, num_trials, dim);
-    	//gettimeofday(&t0, 0);
+		if (flag == 1)
+    		gettimeofday(&t0, 0);
 		edge* mst = kruskal(g);
-    	//gettimeofday(&t1, 0);
-    	//long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-
-    	//printf("Graph number %d with %d vertices and %d dimensions took %ld microseconds to find an MST for\n", i + 1, num_pts, dim, elapsed);
+		if (flag == 1) {
+    		gettimeofday(&t1, 0);
+    		long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+			printf("Graph number %d took %ld microseconds to find an MST for\n", i + 1, elapsed);
+		}
 
     	double sum = 0;
     	for (int j = 0; j < num_pts - 1; j++) {
