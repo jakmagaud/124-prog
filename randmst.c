@@ -135,32 +135,45 @@ int main(int argc, char** argv) {
 	int num_trials = atoi(argv[3]);
 	int dim = atoi(argv[4]);
 
-	time_t t;
-	srand((unsigned) time(&t));
-
-	graph* g = graph_generator(num_pts, num_trials, dim);
-
-	edge* mst = kruskal(g);
-
-	/* For timing, when we get there
+	srand((unsigned) time(NULL));
 	struct timeval t0;
     struct timeval t1;
 
-    gettimeofday(&t0, 0);
-    gettimeofday(&t1, 0);
-    long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-    printf("Operation took %ld microseconds\n", elapsed);
-    */
+    double avg_wgts[num_trials];
 
+	for (int i = 0; i < num_trials; i++) {
+		graph* g = graph_generator(num_pts, num_trials, dim);
+    	//gettimeofday(&t0, 0);
+		edge* mst = kruskal(g);
+    	//gettimeofday(&t1, 0);
+    	//long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 
-	//cleanup
-	free(mst);
-	free(g->edges);
-	if (g->vertices) {
-		for (int i = 0; i < g->num_vertices; i++) {
-			free(g->vertices[i].coords);
+    	//printf("Graph number %d with %d vertices and %d dimensions took %ld microseconds to find an MST for\n", i + 1, num_pts, dim, elapsed);
+
+    	double sum = 0;
+    	for (int j = 0; j < num_pts - 1; j++) {
+    		sum += mst[j].weight;
+    	}
+		avg_wgts[i] = sum / (num_pts - 1);
+		printf("The average weight of graph number %d the MST was %f\n", i, avg_wgts[i]);
+
+		//cleanup
+		free(mst);
+		free(g->edges);
+		if (g->vertices) {
+			for (int i = 0; i < g->num_vertices; i++) {
+				free(g->vertices[i].coords);
+			}
+			free(g->vertices);
 		}
-		free(g->vertices);
+		free(g);
 	}
-	free(g);
+
+	double sum = 0;
+	for (int i = 0; i < num_trials; i++) {
+		sum += avg_wgts[i];
+	}
+	double overall_avg = sum / (num_trials);
+	printf("The overall average weight for MSTs of size %d and dimension %d is %f\n", num_pts, dim, overall_avg);
+
 }
