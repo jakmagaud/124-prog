@@ -3,31 +3,29 @@
 #include <stdbool.h>
 #include "randmst.h"
 
-node* make_set(node s) {
-	node* n = malloc(sizeof(node))
-	n->parent = s;
+void make_set(node* n, int i) {
+	n->parent = i;
 	n->rank = 0;
-	return n;
 }
 
-node* find(node* cur_node) {
-	if (cur_node != cur_node->parent) {
-		cur_node->parent = find(cur_node->parent);
+int find(node* sets, int target) {
+	if (sets[target].parent != target) {
+		sets[target].parent = find(sets, sets[target].parent);
 	}
-	return cur_node->parent;
+	return sets[target].parent;
 }
 
-void link(node* n1, node* n2) {
-	if (n1->rank > n2->rank) {
-		n2->parent = n1;
+void link(node* sets, int root1, int root2) {
+	if (sets[root1].rank > sets[root2].rank) {
+		sets[root2].parent = root1;
 	}
 	else {
-		n1->parent = n2;
-		if (n1->rank == n2->rank)
-			n2->rank += 1;
+		sets[root1].parent = root2;
+		if (sets[root1].rank == sets[root2].rank)
+			sets[root2].rank++;
 	}
 }
 
-void disj_union(node* n1, node* n2) {
-	link(find(n1), find(n2));
+void disj_union(node* sets, int root1, int root2) {
+	link(sets, find(sets, root1), find(sets, root2));
 }

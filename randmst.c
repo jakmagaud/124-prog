@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <sys/time.h>
+#include <time.h>
 #include "randmst.h"
 
 //returns random number between 0 and 1
@@ -98,7 +99,9 @@ graph* graph_generator(int num_pts, int num_trials, int dim) {
 int edge_comp(const void* a, const void* b) {
 	edge* e1 = (edge*) a;
 	edge* e2 = (edge*) b;
-	return e1->weight > e2->weight;
+	if (e1->weight > e2->weight) return 1;
+	else if (e1->weight < e2->weight) return -1;
+	else return 0;
 }
 
 edge* kruskal(graph* g) {
@@ -106,32 +109,23 @@ edge* kruskal(graph* g) {
 	qsort(g->edges, g->num_edges, sizeof(edge), edge_comp);
 	edge* MST_edges = malloc(sizeof(edge) * (g->num_vertices - 1));
 	node* sets = malloc(sizeof(node) * g->num_vertices);
-	int curr_edge_index = 0;
+	int mst_edge_index = 0;
 
-	for (int i = 0; i < g->num_vertices; i++){
-		sets[i] = make_set(g->vertices[i]);
-	}
-
-	for (int i = 0; i < g->num_edges; i++){
-		if find(g->edges[i].startpoint) != find(g->edges[i].endpoint){
-			MST_edges[curr_edge_index] = g->edges[i];
-			curr_edge_index += 1;
-			disj_union(sets[g->edges[i].startpoint], sets[g->edges[i].endpoint]);
-		}
-	}
-	return MST_edges;
-}
-
-
-
-void set_coords(graph* g, int dim) {
-	g->vertices = malloc(sizeof(vertex) * g->num_vertices);
 	for (int i = 0; i < g->num_vertices; i++) {
-		g->vertices[i].coords = malloc(sizeof(double) * dim);
-		for (int j = 0; j < dim; j++) {
-			g->vertices[i].coords[j] = rng();
+		make_set(&sets[i], i);
+	}
+
+	for (int i = 0; i < g->num_edges; i++) {
+		int startpoint_root = find(sets, g->edges[i].startpoint);
+		int endpoint_root = find(sets, g->edges[i].endpoint);
+		if (startpoint_root != endpoint_root) {
+			MST_edges[mst_edge_index] = g->edges[i];
+			mst_edge_index++;
+			disj_union(sets, startpoint_root, endpoint_root);
 		}
 	}
+
+	return MST_edges;
 }
 
 
@@ -141,7 +135,12 @@ int main(int argc, char** argv) {
 	int num_trials = atoi(argv[3]);
 	int dim = atoi(argv[4]);
 
+	time_t t;
+	srand((unsigned) time(&t));
+
 	graph* g = graph_generator(num_pts, num_trials, dim);
+
+	edge* mst = kruskal(g);
 
 	/* For timing, when we get there
 	struct timeval t0;
@@ -153,7 +152,9 @@ int main(int argc, char** argv) {
     printf("Operation took %ld microseconds\n", elapsed);
     */
 
+
 	//cleanup
+	free(mst);
 	free(g->edges);
 	if (g->vertices) {
 		for (int i = 0; i < g->num_vertices; i++) {

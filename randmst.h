@@ -20,11 +20,11 @@ typedef struct graph {
 //Nodes for disjoint set data structure
 typedef struct node {
 	int rank;
-	struct node* parent;
+	int parent;
 } node;
 
 //Disjoint set functions
-void make_set(node* n);
-node* find(node* cur_node);
-void link(node* n1, node* n2);
-void disj_union(node* n1, node* n2);
+void make_set(node* n, int i);
+int find(node* sets, int target);
+void link(node* sets, int root1, int root2);
+void disj_union(node* sets, int root1, int root2);
