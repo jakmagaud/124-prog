@@ -107,7 +107,7 @@ int edge_comp(const void* a, const void* b) {
 
 double edge_weight_bound(int num_vertices, int dim){
 	if (dim == 0){
-		return float(1.0/(num_vertices * 0.0593 + 2.33589339));
+		return float(1.0/(num_vertices * 0.0593 + 2.13589339));
 	}
 	return 0;
 }
@@ -117,7 +117,8 @@ edge* kruskal(graph* g, int dim) {
 	qsort(g->edges, g->num_edges, sizeof(edge), edge_comp);
 
 	double bound = edge_weight_bound(g->num_vertices, dim);
-	
+
+	// edge* under_bound_edge
 
 	edge* MST_edges = malloc(sizeof(edge) * (g->num_vertices - 1));
 	node* sets = malloc(sizeof(node) * g->num_vertices);
