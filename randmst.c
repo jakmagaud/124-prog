@@ -65,7 +65,8 @@ graph* graph_generator(int num_pts, int num_trials, int dim) {
 	graph* g = create_graph(num_pts, num_pts * (num_pts - 1) / 2);
 
 	switch (dim) {
-		case 1: {
+		case 0: {
+			// printf("HI");
 			int cur_edge = 0;
 			for (int i = 0; i < g->num_vertices; i++) {
 				for (int j = i + 1; j < g->num_vertices; j++) {
@@ -104,9 +105,20 @@ int edge_comp(const void* a, const void* b) {
 	else return 0;
 }
 
-edge* kruskal(graph* g) {
+double edge_weight_bound(int num_vertices, int dim){
+	if (dim == 0){
+		return float(1.0/(num_vertices * 0.0593 + 2.33589339));
+	}
+	return 0;
+}
+
+edge* kruskal(graph* g, int dim) {
 	//sort edges according to weight in ascending order
 	qsort(g->edges, g->num_edges, sizeof(edge), edge_comp);
+
+	double bound = edge_weight_bound(g->num_vertices, dim);
+	
+
 	edge* MST_edges = malloc(sizeof(edge) * (g->num_vertices - 1));
 	node* sets = malloc(sizeof(node) * g->num_vertices);
 
@@ -129,8 +141,10 @@ edge* kruskal(graph* g) {
 }
 
 
+
 int main(int argc, char** argv) {
 	//flag options: 0 for no extra stuff, 1 for timing
+
 	int flag = atoi(argv[1]);
 	int num_pts = atoi(argv[2]);
 	int num_trials = atoi(argv[3]);
@@ -140,25 +154,37 @@ int main(int argc, char** argv) {
 	struct timeval t0;
     struct timeval t1;
 
-    double avg_wgts[num_trials];
+    double avg_sum[num_trials];
+
+    double max_max_edge = 0;
 
 	for (int i = 0; i < num_trials; i++) {
 		graph* g = graph_generator(num_pts, num_trials, dim);
 		if (flag == 1)
     		gettimeofday(&t0, 0);
-		edge* mst = kruskal(g);
+		edge* mst = kruskal(g, dim);
+
+		if (max_max_edge < mst[num_pts - 2].weight){
+			max_max_edge = mst[num_pts - 2].weight;
+		}
+
+		// printf("%f", mst[num_pts - 2].weight);
 		if (flag == 1) {
     		gettimeofday(&t1, 0);
     		long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-			printf("Graph number %d took %ld microseconds to find an MST for\n", i + 1, elapsed);
+			// printf("Graph number %d took %ld microseconds to find an MST for\n", i + 1, elapsed);
 		}
 
     	double sum = 0;
     	for (int j = 0; j < num_pts - 1; j++) {
     		sum += mst[j].weight;
     	}
-		avg_wgts[i] = sum / (num_pts - 1);
-		printf("The average weight of graph number %d the MST was %f\n", i, avg_wgts[i]);
+    	avg_sum[i] = sum;
+		// avg_wgts[i] = sum / (num_pts - 1);
+		// printf("The average weight of graph number %d the MST was %f\n", i, avg_wgts[i]);
+		// printf("The weight of graph number %d of MST is %f\n", i, sum);
+
+    	// printf("max edge in MST is %f\n", mst[num_pts - 2].weight);
 
 		//cleanup
 		free(mst);
@@ -171,12 +197,16 @@ int main(int argc, char** argv) {
 		}
 		free(g);
 	}
+	printf ("%f", edge_weight_bound(num_pts, dim));
+	// FILE *f = fopen("file.txt", "w");
+	// fprintf(f, "%f %d %d", max_max_edge, num_pts, dim);
+	// fclose(f);
 
 	double sum = 0;
 	for (int i = 0; i < num_trials; i++) {
-		sum += avg_wgts[i];
+		sum += avg_sum[i];
 	}
 	double overall_avg = sum / (num_trials);
-	printf("The overall average weight for MSTs of size %d and dimension %d is %f\n", num_pts, dim, overall_avg);
-
+	// printf("The overall average weight for MSTs of size %d and dimension %d is %f\n", num_pts, dim, overall_avg);
+	printf("%f", max_max_edge);
 }
