@@ -109,12 +109,12 @@ edge* kruskal(graph* g) {
 	qsort(g->edges, g->num_edges, sizeof(edge), edge_comp);
 	edge* MST_edges = malloc(sizeof(edge) * (g->num_vertices - 1));
 	node* sets = malloc(sizeof(node) * g->num_vertices);
-	int mst_edge_index = 0;
 
 	for (int i = 0; i < g->num_vertices; i++) {
 		make_set(&sets[i], i);
 	}
 
+	int mst_edge_index = 0;
 	for (int i = 0; i < g->num_edges; i++) {
 		int startpoint_root = find(sets, g->edges[i].startpoint);
 		int endpoint_root = find(sets, g->edges[i].endpoint);
