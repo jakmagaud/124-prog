@@ -7,6 +7,12 @@ typedef struct edge {
 	double weight;
 } edge;
 
+typedef struct vector {
+    edge* buf;
+    int len;
+    int max_len;
+} vector;
+
 typedef struct vertex {
 	double* coords;
 } vertex;
