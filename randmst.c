@@ -68,8 +68,6 @@ double distance(vertex v1, vertex v2, int dim) {
 }
 
 void calc_weights(graph* g, int dim, double bound) {
-	//int cur_edge = 0;
-
 	for (int i = 0; i < g->num_vertices; i++) {
 		for (int j = i + 1; j < g->num_vertices; j++) {
 			double weight = distance(g->vertices[i], g->vertices[j], dim);
@@ -81,12 +79,6 @@ void calc_weights(graph* g, int dim, double bound) {
 			e->endpoint = j;
 			e->weight = weight;
 			vector_insert(g->edges, *e);
-			/*
-			g->edges[cur_edge].startpoint = i;
-			g->edges[cur_edge].endpoint = j;
-			g->edges[cur_edge].weight = distance(g->vertices[i], g->vertices[j], dim);
-			cur_edge++;
-			*/
 		}
 	}
 }
@@ -101,7 +93,6 @@ graph* graph_generator(int num_pts, int num_trials, int dim, int flag) {
 
 	switch (dim) {
 		case 0: {
-			//int cur_edge = 0;
 			for (int i = 0; i < g->num_vertices; i++) {
 				for (int j = i + 1; j < g->num_vertices; j++) {
 					double weight = rng();
@@ -113,12 +104,6 @@ graph* graph_generator(int num_pts, int num_trials, int dim, int flag) {
 					e->endpoint = j;
 					e->weight = weight;
 					vector_insert(g->edges, *e);
-					/*
-					g->edges[cur_edge].startpoint = i;
-					g->edges[cur_edge].endpoint = j;
-					g->edges[cur_edge].weight = rng();
-					cur_edge++;
-					*/
 				}
 			}
 			break;
@@ -224,7 +209,7 @@ int main(int argc, char** argv) {
 		// 	}
 		// 	free(g->vertices);
 		// }
-		// free(g);
+		//free(g);
 	}
 	//printf("%f", edge_weight_bound(num_pts, dim));
 
