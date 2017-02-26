@@ -19,19 +19,26 @@ double edge_weight_bound(int num_vertices, int dim) {
 			return 0.00205;
 		return (1.0/((double) num_vertices * 0.0493 + 2.13589339));
 	}
-	else if (dim == 2){
+	else if (dim == 2) {
 		if (num_vertices < 300)
 			return 1.0;
 		if (num_vertices > 2000)
 			return 0.06777;
 		return (1.0/((double) num_vertices * 0.006519+ 1.717));
 	}
-	else if (dim == 3){
+	else if (dim == 3) {
 		if (num_vertices < 300)
 			return 1.0;
 		if (num_vertices > 2000)
 			return .1598;
 		return (1.0/((double) num_vertices * 0.00233+ 1.597));
+	}
+	else {
+		if (num_vertices < 300)
+			return 1.0;
+		if (num_vertices > 10000)
+			return 0.23773397886916703;
+		return (1.5 * pow(num_vertices, -.2));
 	}
 	return 1.0;
 }
@@ -226,5 +233,5 @@ int main(int argc, char** argv) {
 	}
 	double overall_avg = sum / (num_trials);
 	printf("Average MST weight was %f\n", overall_avg);
-	//printf("%f", max_max_edge);
+	// printf("%f", max_max_edge);
 }
