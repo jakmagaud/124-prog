@@ -19,7 +19,7 @@ double edge_weight_bound(int num_vertices, int dim) {
 			return 0.00205;
 		return (1.0/((double) num_vertices * 0.0493 + 2.13589339));
 	}
-	return 0;
+	return 1.0;
 }
 
 graph* create_graph(int num_vertices, int num_edges) {
