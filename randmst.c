@@ -26,6 +26,13 @@ double edge_weight_bound(int num_vertices, int dim) {
 			return 0.06777;
 		return (1.0/((double) num_vertices * 0.006519+ 1.717));
 	}
+	else if (dim == 3){
+		if (num_vertices < 300)
+			return 1.0;
+		if (num_vertices > 2000)
+			return .1598;
+		return (1.0/((double) num_vertices * 0.00233+ 1.597));
+	}
 	return 1.0;
 }
 
