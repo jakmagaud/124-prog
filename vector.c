@@ -23,24 +23,24 @@ void free_vector(vector* vec) {
 	free(vec);
 }
 
-vector* concat_vector(vector* vec1, vector* vec2) {
-	int new_len = vec1->len + vec2->len;
-	int new_max_len = new_len * 2;
+// vector* concat_vector(vector* vec1, vector* vec2) {
+// 	int new_len = vec1->len + vec2->len;
+// 	int new_max_len = new_len * 2;
 
-	vec1->buf = realloc(vec1->buf, new_max_len * sizeof(edge));
-	memcpy(vec1->buf + vec1->len, vec2->buf, vec2->len * sizeof(edge));
+// 	vec1->buf = realloc(vec1->buf, new_max_len * sizeof(edge));
+// 	memcpy(vec1->buf + vec1->len, vec2->buf, vec2->len * sizeof(edge));
 
-	vec1->len = new_len;
-	vec1->max_len = new_max_len;
+// 	vec1->len = new_len;
+// 	vec1->max_len = new_max_len;
 
-	return vec1;
-}
+// 	return vec1;
+// }
 
-vector* copy_vector(vector* vec) {
-	vector* copy = create_vector(vec->len);
-	concat_vector(copy, vec);
-	return copy;
-}
+// vector* copy_vector(vector* vec) {
+// 	vector* copy = create_vector(vec->len);
+// 	concat_vector(copy, vec);
+// 	return copy;
+// }
 
 int vector_insert(vector* vec, edge e) {
 	if (vec->len >= vec->max_len) {

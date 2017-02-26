@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define INIT_VEC_LEN 256
+#define INIT_VEC_LEN 512
 
 typedef struct edge {
 	int startpoint, endpoint;

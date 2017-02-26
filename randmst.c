@@ -11,9 +11,13 @@ double rng(void) {
 	return (double) rand() / (double) ((unsigned) RAND_MAX + 1);
 }
 
-double edge_weight_bound(int num_vertices, int dim){
-	if (dim == 0){
-		return (1.0/((double) num_vertices * 0.0593 + 2.13589339));
+double edge_weight_bound(int num_vertices, int dim) {
+	if (dim == 0) {
+		if (num_vertices < 300) 
+			return 1.0;
+		if (num_vertices > 10000) 
+			return 0.00205;
+		return (1.0/((double) num_vertices * 0.0493 + 2.13589339));
 	}
 	return 0;
 }
@@ -56,9 +60,8 @@ double distance(vertex v1, vertex v2, int dim) {
 	return result;
 }
 
-void calc_weights(graph* g, int dim) {
+void calc_weights(graph* g, int dim, double bound) {
 	//int cur_edge = 0;
-	double bound = edge_weight_bound(g->num_vertices, dim);
 
 	for (int i = 0; i < g->num_vertices; i++) {
 		for (int j = i + 1; j < g->num_vertices; j++) {
@@ -66,11 +69,11 @@ void calc_weights(graph* g, int dim) {
 			if (weight > bound) {
 				continue;
 			}
-			edge e;
-			e.startpoint = i;
-			e.endpoint = j;
-			e.weight = weight;
-			vector_insert(g->edges, e);
+			edge* e = malloc(sizeof(edge));
+			e->startpoint = i;
+			e->endpoint = j;
+			e->weight = weight;
+			vector_insert(g->edges, *e);
 			/*
 			g->edges[cur_edge].startpoint = i;
 			g->edges[cur_edge].endpoint = j;
@@ -81,14 +84,16 @@ void calc_weights(graph* g, int dim) {
 	}
 }
 
-graph* graph_generator(int num_pts, int num_trials, int dim) {
+graph* graph_generator(int num_pts, int num_trials, int dim, int flag) {
 	graph* g = create_graph(num_pts, num_pts * (num_pts - 1) / 2);
 
 	double bound = edge_weight_bound(num_pts, dim);
+	if (flag == 2 || flag == 3) {
+		bound = 1.0;
+	}
 
 	switch (dim) {
 		case 0: {
-			// printf("HI");
 			//int cur_edge = 0;
 			for (int i = 0; i < g->num_vertices; i++) {
 				for (int j = i + 1; j < g->num_vertices; j++) {
@@ -96,11 +101,11 @@ graph* graph_generator(int num_pts, int num_trials, int dim) {
 					if (weight > bound) {
 						continue;
 					}
-					edge e;
-					e.startpoint = i;
-					e.endpoint = j;
-					e.weight = weight;
-					vector_insert(g->edges, e);
+					edge* e = malloc(sizeof(edge));
+					e->startpoint = i;
+					e->endpoint = j;
+					e->weight = weight;
+					vector_insert(g->edges, *e);
 					/*
 					g->edges[cur_edge].startpoint = i;
 					g->edges[cur_edge].endpoint = j;
@@ -113,17 +118,17 @@ graph* graph_generator(int num_pts, int num_trials, int dim) {
 		}
 		case 2: {
 			set_coords(g, 2);
-			calc_weights(g, 2);
+			calc_weights(g, 2, bound);
 			break;
 		}
 		case 3: {
 			set_coords(g, 3);
-			calc_weights(g, 3);
+			calc_weights(g, 3, bound);
 			break;
 		}
 		case 4: {
 			set_coords(g, 4);
-			calc_weights(g, 4);
+			calc_weights(g, 4, bound);
 			break;
 		}
 	}
@@ -140,9 +145,7 @@ int edge_comp(const void* a, const void* b) {
 
 edge* kruskal(graph* g, int dim) {
 	//sort edges according to weight in ascending order
-	qsort(g->edges, g->num_edges, sizeof(edge), edge_comp);
-
-	double bound = edge_weight_bound(g->num_vertices, dim);
+	qsort(g->edges->buf, g->edges->len, sizeof(edge), edge_comp);
 
 	edge* MST_edges = malloc(sizeof(edge) * (g->num_vertices - 1));
 	node* sets = malloc(sizeof(node) * g->num_vertices);
@@ -166,7 +169,7 @@ edge* kruskal(graph* g, int dim) {
 }
 
 int main(int argc, char** argv) {
-	//flag options: 0 for no extra stuff, 1 for timing
+	//flag options: 0 for no extra stuff, 1 for timing, 2 for no bounds, 3 for no bounds and timing
 
 	int flag = atoi(argv[1]);
 	int num_pts = atoi(argv[2]);
@@ -181,19 +184,19 @@ int main(int argc, char** argv) {
     double max_max_edge = 0;
 
 	for (int i = 0; i < num_trials; i++) {
-		graph* g = graph_generator(num_pts, num_trials, dim);
-		if (flag == 1)
+		graph* g = graph_generator(num_pts, num_trials, dim, flag);
+		if (flag == 1 || flag == 3)
     		gettimeofday(&t0, 0);
 		edge* mst = kruskal(g, dim);
 
 		// printf("%f", mst[num_pts - 2].weight);
-		if (flag == 1) {
+		if (flag == 1 || flag == 3) {
     		gettimeofday(&t1, 0);
     		long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 			printf("Graph number %d took %ld microseconds to find an MST for\n", i + 1, elapsed);
 		}
 
-		if (max_max_edge < mst[num_pts - 2].weight){
+		if (max_max_edge < mst[num_pts - 2].weight) {
 			max_max_edge = mst[num_pts - 2].weight;
 		}
 
@@ -203,19 +206,18 @@ int main(int argc, char** argv) {
     	}
     	avg_sum[i] = sum;
 		// printf("The weight of graph number %d of MST is %f\n", i, sum);
-
     	// printf("max edge in MST is %f\n", mst[num_pts - 2].weight);
 
 		//cleanup
-		free(mst);
-		free(g->edges);
-		if (g->vertices) {
-			for (int i = 0; i < g->num_vertices; i++) {
-				free(g->vertices[i].coords);
-			}
-			free(g->vertices);
-		}
-		free(g);
+		//free(mst);
+		// free_vector(g->edges);
+		// if (g->vertices) {
+		// 	for (int i = 0; i < g->num_vertices; i++) {
+		// 		free(g->vertices[i].coords);
+		// 	}
+		// 	free(g->vertices);
+		// }
+		// free(g);
 	}
 	//printf("%f", edge_weight_bound(num_pts, dim));
 
