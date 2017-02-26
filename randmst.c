@@ -232,6 +232,6 @@ int main(int argc, char** argv) {
 		sum += avg_sum[i];
 	}
 	double overall_avg = sum / (num_trials);
-	// printf("Average MST weight was %f\n", overall_avg);
-	printf("%f", max_max_edge);
+	printf("Average MST weight was %f\n", overall_avg);
+	// printf("%f", max_max_edge);
 }
