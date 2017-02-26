@@ -4,8 +4,6 @@
 #include <string.h>
 #include "randmst.h"
 
-#define INIT_VEC_LEN 256
-
 vector* create_vector(int len) {
 	vector* vec = malloc(sizeof(vector));
 	if (len < INIT_VEC_LEN)

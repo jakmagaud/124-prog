@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#define INIT_VEC_LEN 256
+
 typedef struct edge {
 	int startpoint, endpoint;
 	double weight;
@@ -19,7 +21,7 @@ typedef struct vertex {
 
 typedef struct graph {
 	int num_vertices, num_edges;
-	edge* edges;
+	vector* edges;
 	vertex* vertices;
 } graph;
 
@@ -34,3 +36,10 @@ void make_set(node* n, int i);
 int find(node* sets, int target);
 void link(node* sets, int root1, int root2);
 void disj_union(node* sets, int root1, int root2);
+
+//Vector API
+vector* create_vector(int len);
+void free_vector(vector* vec);
+vector* concat_vector(vector* vec1, vector* vec2);
+vector* copy_vector(vector* vec);
+int vector_insert(vector* vec, edge e);

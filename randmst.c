@@ -22,7 +22,7 @@ graph* create_graph(int num_vertices, int num_edges) {
 	graph* g = malloc(sizeof(graph));
 	g->num_vertices = num_vertices;
 	g->num_edges = num_edges;
-	g->edges = malloc(sizeof(edge) * num_edges);
+	g->edges = create_vector(INIT_VEC_LEN);
 	g->vertices = NULL;
 	return g;
 }
@@ -57,13 +57,26 @@ double distance(vertex v1, vertex v2, int dim) {
 }
 
 void calc_weights(graph* g, int dim) {
-	int cur_edge = 0;
+	//int cur_edge = 0;
+	double bound = edge_weight_bound(g->num_vertices, dim);
+
 	for (int i = 0; i < g->num_vertices; i++) {
 		for (int j = i + 1; j < g->num_vertices; j++) {
+			double weight = distance(g->vertices[i], g->vertices[j], dim);
+			if (weight > bound) {
+				continue;
+			}
+			edge e;
+			e.startpoint = i;
+			e.endpoint = j;
+			e.weight = weight;
+			vector_insert(g->edges, e);
+			/*
 			g->edges[cur_edge].startpoint = i;
 			g->edges[cur_edge].endpoint = j;
 			g->edges[cur_edge].weight = distance(g->vertices[i], g->vertices[j], dim);
 			cur_edge++;
+			*/
 		}
 	}
 }
@@ -76,13 +89,24 @@ graph* graph_generator(int num_pts, int num_trials, int dim) {
 	switch (dim) {
 		case 0: {
 			// printf("HI");
-			int cur_edge = 0;
+			//int cur_edge = 0;
 			for (int i = 0; i < g->num_vertices; i++) {
 				for (int j = i + 1; j < g->num_vertices; j++) {
+					double weight = rng();
+					if (weight > bound) {
+						continue;
+					}
+					edge e;
+					e.startpoint = i;
+					e.endpoint = j;
+					e.weight = weight;
+					vector_insert(g->edges, e);
+					/*
 					g->edges[cur_edge].startpoint = i;
 					g->edges[cur_edge].endpoint = j;
 					g->edges[cur_edge].weight = rng();
 					cur_edge++;
+					*/
 				}
 			}
 			break;
@@ -128,11 +152,11 @@ edge* kruskal(graph* g, int dim) {
 	}
 
 	int mst_edge_index = 0;
-	for (int i = 0; i < g->num_edges; i++) {
-		int startpoint_root = find(sets, g->edges[i].startpoint);
-		int endpoint_root = find(sets, g->edges[i].endpoint);
+	for (int i = 0; i < g->edges->len; i++) {
+		int startpoint_root = find(sets, g->edges->buf[i].startpoint);
+		int endpoint_root = find(sets, g->edges->buf[i].endpoint);
 		if (startpoint_root != endpoint_root) {
-			MST_edges[mst_edge_index] = g->edges[i];
+			MST_edges[mst_edge_index] = g->edges->buf[i];
 			mst_edge_index++;
 			disj_union(sets, startpoint_root, endpoint_root);
 		}
