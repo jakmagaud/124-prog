@@ -11,6 +11,7 @@ double rng(void) {
 	return (double) rand() / (double) ((unsigned) RAND_MAX + 1);
 }
 
+//k(n) bound for throwing away edges
 double edge_weight_bound(int num_vertices, int dim) {
 	if (dim == 0) {
 		if (num_vertices < 300) 

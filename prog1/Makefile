@@ -1,7 +1,7 @@
 CC = gcc -std=c99 -g -ggdb3
 
 randmst: randmst.o disjoint.o vector.o
-	$(CC) -o randmst randmst.o disjoint.o vector.o
+	$(CC) -o randmst randmst.o disjoint.o vector.o -lm
 
 randmst.o: randmst.c randmst.h
 	$(CC) -c randmst.c
