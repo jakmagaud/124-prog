@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <sys/time.h>
+#include <math.h>
+#include <time.h>
 #include "strassen.h"
 
 matrix* mat_init(int rows, int cols) {
@@ -51,21 +54,41 @@ matrix* strassen_mult(matrix mat1, matrix mat2) {
 	return NULL;
 }
 
+void read_file_mat(char* fname, int dim, matrix** mat1, matrix** mat2) {
+	*mat1 = mat_init(dim, dim);
+	*mat2 = mat_init(dim, dim);
+	FILE* file = fopen(fname, "r");
+
+	int tmp = 0;
+	for (int i = 0; i < pow(dim,2); i++) {
+		int r = i / dim;
+		int c = i % dim;
+		fscanf(file, "%d", &tmp);
+		(*mat1)->data[r][c] = tmp;
+	}
+	for (int j = 0; j < pow(dim,2); j++) {
+		int r = j / dim;
+		int c = j % dim;
+		fscanf(file, "%d", &tmp);
+		(*mat2)->data[r][c] = tmp;
+	}
+	fclose(file);
+}
+
 int main(int argc, char** argv) {
 	//flag options: 0 for no extra stuff
-	// int flag = atoi(argv[1]);
-	// int dim = atoi(argv[2]);
-	// char* fname = argv[3];
+	int flag = atoi(argv[1]);
+	int dim = atoi(argv[2]);
+	char* fname = argv[3];
 
-	matrix* mat1 = mat_init(2,2);
-	matrix* mat2 = mat_init(2,2);
-	mat1->data[0][0] = 1;
-	mat1->data[0][1] = 2;
-	mat1->data[1][0] = 3;
-	mat1->data[1][1] = 4;
-	mat2->data[0][0] = 4;
-	mat2->data[0][1] = 3;
-	mat2->data[1][0] = 2;
-	mat2->data[1][1] = 1;
+	matrix* mat1;
+	matrix* mat2;
+	read_file_mat(fname, dim, &mat1, &mat2);
 	matrix* result = mat_mult(*mat1, *mat2);
+
+	// struct timeval t0;
+    // struct timeval t1;
+    // gettimeofday(&t0, 0);
+ 	// gettimeofday(&t1, 0);
+ 	// long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 }
