@@ -75,6 +75,21 @@ void read_file_mat(char* fname, int dim, matrix** mat1, matrix** mat2) {
 	fclose(file);
 }
 
+void print_mat(matrix* mat) {
+	for (int i = 0; i < mat->rows; i++) {
+		for (int j = 0; j < mat->cols; j++) {
+			printf("%d ", mat->data[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void print_mat_diag(matrix* mat) {
+	for (int i = 0, j = 0; i < mat->rows; i++, j++) {
+		printf("%d\n", mat->data[i][j]);
+	} 
+}
+
 int main(int argc, char** argv) {
 	//flag options: 0 for no extra stuff
 	int flag = atoi(argv[1]);
@@ -85,6 +100,8 @@ int main(int argc, char** argv) {
 	matrix* mat2;
 	read_file_mat(fname, dim, &mat1, &mat2);
 	matrix* result = mat_mult(*mat1, *mat2);
+	print_mat(result);
+	print_mat_diag(result);
 
 	// struct timeval t0;
     // struct timeval t1;
