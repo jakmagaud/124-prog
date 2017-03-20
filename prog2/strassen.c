@@ -18,16 +18,16 @@ matrix* mat_init(int rows, int cols) {
 	return mat;
 }
 
-matrix* mat_add(matrix mat1, matrix mat2, bool sub) {
-	assert(mat1.rows == mat2.rows && mat1.cols == mat2.cols);
-	matrix* result = mat_init(mat1.rows, mat1.cols);
+matrix* mat_add(matrix* mat1, matrix* mat2, bool sub) {
+	assert(mat1->rows == mat2->rows && mat1->cols == mat2->cols);
+	matrix* result = mat_init(mat1->rows, mat1->cols);
 
-	for (int i = 0; i < mat1.rows; i++) {
-		for (int j = 0; j < mat1.cols; j++) {
+	for (int i = 0; i < mat1->rows; i++) {
+		for (int j = 0; j < mat1->cols; j++) {
 			if (!sub)
-				result->data[i][j] = mat1.data[i][j] + mat2.data[i][j];
+				result->data[i][j] = mat1->data[i][j] + mat2->data[i][j];
 			else
-				result->data[i][j] = mat1.data[i][j] - mat2.data[i][j];
+				result->data[i][j] = mat1->data[i][j] - mat2->data[i][j];
 		}
 	}
 	return result;
@@ -37,20 +37,23 @@ matrix* mat_pad(matrix mat) {
 	return NULL;
 }
 
-matrix* mat_mult(matrix mat1, matrix mat2) {
-	assert(mat1.cols == mat2.rows);
-	matrix* result = mat_init(mat1.rows, mat2.cols);
-	for (int i = 0; i < mat1.rows; i++) {
-		for (int j = 0; j < mat2.cols; j++) {
-			for (int k = 0; k < mat1.cols; k++) {
-				result->data[i][j] += mat1.data[i][k] * mat2.data[k][j];
+matrix* mat_mult(matrix* mat1, matrix* mat2) {
+	assert(mat1->cols == mat2->rows);
+	matrix* result = mat_init(mat1->rows, mat2->cols);
+	for (int i = 0; i < mat1->rows; i++) {
+		for (int j = 0; j < mat2->cols; j++) {
+			for (int k = 0; k < mat1->cols; k++) {
+				result->data[i][j] += mat1->data[i][k] * mat2->data[k][j];
 			}
 		}
 	}
 	return result;
 }
 
-matrix* strassen_mult(matrix mat1, matrix mat2) {
+matrix* strassen_mult(matrix* mat1, matrix* mat2) {
+	if (mat1->rows < CROSSOVER_PT) 
+		return mat_mult(mat1, mat2);
+
 	return NULL;
 }
 
@@ -99,7 +102,7 @@ int main(int argc, char** argv) {
 	matrix* mat1;
 	matrix* mat2;
 	read_file_mat(fname, dim, &mat1, &mat2);
-	matrix* result = mat_mult(*mat1, *mat2);
+	matrix* result = mat_mult(mat1, mat2);
 	print_mat(result);
 	print_mat_diag(result);
 
