@@ -33,6 +33,23 @@ matrix* mat_add(matrix* mat1, matrix* mat2, bool sub) {
 	return result;
 }
 
+matrix* mat_add_inplace(matrix* mat1, matrix* mat2, bool sub) {
+	assert(mat1->rows == mat2->rows && mat1->cols == mat2->cols);
+	// matrix* result = mat_init(mat1->rows, mat1->cols);
+
+	for (int i = 0; i < mat1->rows; i++) {
+		for (int j = 0; j < mat1->cols; j++) {
+			if (!sub)
+				mat1->data[i][j] = mat1->data[i][j] + mat2->data[i][j];
+			else
+				mat1->data[i][j] = mat1->data[i][j] - mat2->data[i][j];
+		}
+	}
+	return mat1;
+}
+
+
+
 matrix* mat_pad(matrix mat) {
 	return NULL;
 }
