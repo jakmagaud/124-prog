@@ -48,8 +48,6 @@ matrix* mat_add_inplace(matrix* mat1, matrix* mat2, bool sub) {
 	return mat1;
 }
 
-
-
 matrix* mat_pad(matrix mat) {
 	return NULL;
 }
@@ -70,6 +68,64 @@ matrix* mat_mult(matrix* mat1, matrix* mat2) {
 matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 	if (mat1->rows < CROSSOVER_PT) 
 		return mat_mult(mat1, mat2);
+	mat1 = mat_pad(mat1);
+	mat2 = mat_pad(mat2);
+
+	matrix* A = mat_init((mat1->rows)/2, (mat1->cols)/2);
+	for (int i = 0; i < (mat1->rows)/2; i++){
+		for (int j = 0; j < (mat1 -> cols)/2; j++){
+			A->data[i][j] = mat1->data[i][j];
+		}
+	}
+
+	matrix* B = mat_init((mat1->rows)/2, (mat1->cols)/2);
+	for (int i = 0; i < (mat1->rows)/2; i++){
+		for (int j = (mat1 -> cols)/2; j < mat1 -> cols; j++){
+			B->data[i][j] = mat1->data[i][j];
+		}
+	}
+
+	matrix* C = mat_init((mat1->rows)/2, (mat1->cols)/2);
+	for (int i = (mat1->rows)/2; i < mat1->rows; i++){
+		for (int j = 0; j < (mat1 -> cols)/2; j++){
+			C->data[i][j] = mat1->data[i][j];
+		}
+	}
+
+	matrix* D = mat_init((mat1->rows)/2, (mat1->cols)/2);
+	for (int i = (mat1->rows)/2; i < mat1->rows; i++){
+		for (int j = (mat1->cols)/2; j < mat1 -> cols; j++){
+			D->data[i][j] = mat1->data[i][j];
+		}
+	}
+
+	matrix* E = mat_init((mat2->rows)/2, (mat2->cols)/2);
+	for (int i = 0; i < (mat2->rows)/2; i++){
+		for (int j = 0; j < (mat2 -> cols)/2; j++){
+			A->data[i][j] = mat2->data[i][j];
+		}
+	}
+
+	matrix* F = mat_init((mat2->rows)/2, (mat2->cols)/2);
+	for (int i = 0; i < (mat2->rows)/2; i++){
+		for (int j = (mat2 -> cols)/2; j < mat2 -> cols; j++){
+			B->data[i][j] = mat2->data[i][j];
+		}
+	}
+
+	matrix* G = mat_init((mat2->rows)/2, (mat2->cols)/2);
+	for (int i = (mat2->rows)/2; i < mat2->rows; i++){
+		for (int j = 0; j < (mat2 -> cols)/2; j++){
+			C->data[i][j] = mat2->data[i][j];
+		}
+	}
+
+	matrix* H = mat_init((mat2->rows)/2, (mat2->cols)/2);
+	for (int i = (mat2->rows)/2; i < mat2->rows; i++){
+		for (int j = (mat2->cols)/2; j < mat2 -> cols; j++){
+			D->data[i][j] = mat2->data[i][j];
+		}
+	}
 
 	return NULL;
 }
