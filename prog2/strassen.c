@@ -48,10 +48,20 @@ matrix* mat_add_inplace(matrix* mat1, matrix* mat2, bool sub) {
 	return mat1;
 }
 
+void mat_pad(matrix* mat) {
+	if (mat->rows % 2 == 0 && mat->rows % 2 == 0)
+		return;
 
+	mat->data = realloc(mat->data, (mat->rows + 1) * sizeof(int*));
+	mat->data[mat->rows] = calloc(1, mat->cols + 1);
 
-matrix* mat_pad(matrix mat) {
-	return NULL;
+	for (int i = 0; i < mat->rows; i++) {
+		mat->data[i] = realloc(mat->data[i], (mat->cols + 1) * sizeof(int));
+		mat->data[i][mat->cols] = 0;
+	}
+
+	mat->rows++;
+	mat->cols++;
 }
 
 matrix* mat_mult(matrix* mat1, matrix* mat2) {
@@ -119,9 +129,12 @@ int main(int argc, char** argv) {
 	matrix* mat1;
 	matrix* mat2;
 	read_file_mat(fname, dim, &mat1, &mat2);
-	matrix* result = mat_mult(mat1, mat2);
-	print_mat(result);
-	print_mat_diag(result);
+	print_mat(mat1);
+	mat_pad(mat1);
+	print_mat(mat1);
+	// matrix* result = mat_mult(mat1, mat2);
+	// print_mat(result);
+	// print_mat_diag(result);
 
 	// struct timeval t0;
     // struct timeval t1;
