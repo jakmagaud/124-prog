@@ -18,6 +18,22 @@ matrix* mat_init(int rows, int cols) {
 	return mat;
 }
 
+void print_mat(matrix* mat) {
+	for (int i = 0; i < mat->rows; i++) {
+		for (int j = 0; j < mat->cols; j++) {
+			printf("%d ", mat->data[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\n");
+}
+
+void print_mat_diag(matrix* mat) {
+	for (int i = 0, j = 0; i < mat->rows; i++, j++) {
+		printf("%d\n", mat->data[i][j]);
+	} 
+}
+
 matrix* mat_add(matrix* mat1, matrix* mat2, bool sub) {
 	assert(mat1->rows == mat2->rows && mat1->cols == mat2->cols);
 	matrix* result = mat_init(mat1->rows, mat1->cols);
@@ -86,16 +102,20 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 	if (mat1->rows % 2 == 1){
 		mat_pad(mat1);
 		mat_pad(mat2);
+		print_mat(mat1);
+		print_mat(mat2);
 		padQ = 1;
 	}
-	
 
 	matrix* A = mat_init((mat1->rows)/2, (mat1->cols)/2);
+
+	print_mat(mat2);
 	for (int i = 0; i < (mat1->rows)/2; i++){
 		for (int j = 0; j < (mat1 -> cols)/2; j++){
 			A->data[i][j] = mat1->data[i][j];
 		}
 	}
+	print_mat(A);
 
 	matrix* B = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = 0; i < (mat1->rows)/2; i++){
@@ -103,6 +123,7 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 			B->data[i][j - (mat1->cols)/2] = mat1->data[i][j];
 		}
 	}
+	print_mat(B);
 
 	matrix* C = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = (mat1->rows)/2; i < mat1->rows; i++){
@@ -110,6 +131,7 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 			C->data[i-(mat1->rows)/2][j] = mat1->data[i][j];
 		}
 	}
+	print_mat(C);
 
 	matrix* D = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = (mat1->rows)/2; i < mat1->rows; i++){
@@ -117,34 +139,40 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 			D->data[i-(mat1->rows)/2][j-(mat1->cols)/2] = mat1->data[i][j];
 		}
 	}
+	print_mat(D);
+
 
 	matrix* E = mat_init((mat2->rows)/2, (mat2->cols)/2);
 	for (int i = 0; i < (mat2->rows)/2; i++){
 		for (int j = 0; j < (mat2 -> cols)/2; j++){
-			A->data[i][j] = mat2->data[i][j];
+			E->data[i][j] = mat2->data[i][j];
 		}
 	}
+	print_mat(E);
 
 	matrix* F = mat_init((mat2->rows)/2, (mat2->cols)/2);
 	for (int i = 0; i < (mat2->rows)/2; i++){
 		for (int j = (mat2 -> cols)/2; j < mat2 -> cols; j++){
-			B->data[i][j-(mat2 -> cols)/2] = mat2->data[i][j];
+			F->data[i][j-(mat2 -> cols)/2] = mat2->data[i][j];
 		}
 	}
+	print_mat(F);
 
 	matrix* G = mat_init((mat2->rows)/2, (mat2->cols)/2);
 	for (int i = (mat2->rows)/2; i < mat2->rows; i++){
 		for (int j = 0; j < (mat2 -> cols)/2; j++){
-			C->data[i-(mat2 -> rows)/2][j] = mat2->data[i][j];
+			G->data[i-(mat2 -> rows)/2][j] = mat2->data[i][j];
 		}
 	}
+	print_mat(G);
 
 	matrix* H = mat_init((mat2->rows)/2, (mat2->cols)/2);
 	for (int i = (mat2->rows)/2; i < mat2->rows; i++){
 		for (int j = (mat2->cols)/2; j < mat2 -> cols; j++){
-			D->data[i-(mat2 -> rows)/2][j-(mat2 -> cols)/2] = mat2->data[i][j];
+			H->data[i-(mat2 -> rows)/2][j-(mat2 -> cols)/2] = mat2->data[i][j];
 		}
 	}
+	print_mat(H);
 
 	matrix* P1 = mat_mult(A, mat_add(F, H, 1));
 	matrix* P2 = mat_mult(mat_add(A, B, 0), H);
@@ -213,21 +241,6 @@ void read_file_mat(char* fname, int dim, matrix** mat1, matrix** mat2) {
 		(*mat2)->data[r][c] = tmp;
 	}
 	fclose(file);
-}
-
-void print_mat(matrix* mat) {
-	for (int i = 0; i < mat->rows; i++) {
-		for (int j = 0; j < mat->cols; j++) {
-			printf("%d ", mat->data[i][j]);
-		}
-		printf("\n");
-	}
-}
-
-void print_mat_diag(matrix* mat) {
-	for (int i = 0, j = 0; i < mat->rows; i++, j++) {
-		printf("%d\n", mat->data[i][j]);
-	} 
 }
 
 int main(int argc, char** argv) {
