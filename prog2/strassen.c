@@ -100,21 +100,21 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 	matrix* B = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = 0; i < (mat1->rows)/2; i++){
 		for (int j = (mat1 -> cols)/2; j < mat1 -> cols; j++){
-			B->data[i][j] = mat1->data[i][j];
+			B->data[i][j - (mat1->cols)/2] = mat1->data[i][j];
 		}
 	}
 
 	matrix* C = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = (mat1->rows)/2; i < mat1->rows; i++){
 		for (int j = 0; j < (mat1 -> cols)/2; j++){
-			C->data[i][j] = mat1->data[i][j];
+			C->data[i-(mat1->rows)/2][j] = mat1->data[i][j];
 		}
 	}
 
 	matrix* D = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = (mat1->rows)/2; i < mat1->rows; i++){
 		for (int j = (mat1->cols)/2; j < mat1 -> cols; j++){
-			D->data[i][j] = mat1->data[i][j];
+			D->data[i-(mat1->rows)/2][j-(mat1->cols)/2] = mat1->data[i][j];
 		}
 	}
 
@@ -128,21 +128,21 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 	matrix* F = mat_init((mat2->rows)/2, (mat2->cols)/2);
 	for (int i = 0; i < (mat2->rows)/2; i++){
 		for (int j = (mat2 -> cols)/2; j < mat2 -> cols; j++){
-			B->data[i][j] = mat2->data[i][j];
+			B->data[i][j-(mat2 -> cols)/2] = mat2->data[i][j];
 		}
 	}
 
 	matrix* G = mat_init((mat2->rows)/2, (mat2->cols)/2);
 	for (int i = (mat2->rows)/2; i < mat2->rows; i++){
 		for (int j = 0; j < (mat2 -> cols)/2; j++){
-			C->data[i][j] = mat2->data[i][j];
+			C->data[i-(mat2 -> rows)/2][j] = mat2->data[i][j];
 		}
 	}
 
 	matrix* H = mat_init((mat2->rows)/2, (mat2->cols)/2);
 	for (int i = (mat2->rows)/2; i < mat2->rows; i++){
 		for (int j = (mat2->cols)/2; j < mat2 -> cols; j++){
-			D->data[i][j] = mat2->data[i][j];
+			D->data[i-(mat2 -> rows)/2][j-(mat2 -> cols)/2] = mat2->data[i][j];
 		}
 	}
 
