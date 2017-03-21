@@ -80,8 +80,8 @@ matrix* mat_mult(matrix* mat1, matrix* mat2) {
 matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 	if (mat1->rows < CROSSOVER_PT) 
 		return mat_mult(mat1, mat2);
-	mat1 = mat_pad(mat1);
-	mat2 = mat_pad(mat2);
+	// mat1 = mat_pad(mat1);
+	// mat2 = mat_pad(mat2);
 
 	matrix* A = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = 0; i < (mat1->rows)/2; i++){
@@ -183,20 +183,52 @@ int main(int argc, char** argv) {
 	int flag = atoi(argv[1]);
 	int dim = atoi(argv[2]);
 	char* fname = argv[3];
-
+	struct timeval t0;
+    struct timeval t1;
 	matrix* mat1;
 	matrix* mat2;
-	read_file_mat(fname, dim, &mat1, &mat2);
-	print_mat(mat1);
-	mat_pad(mat1);
-	print_mat(mat1);
-	// matrix* result = mat_mult(mat1, mat2);
-	// print_mat(result);
-	// print_mat_diag(result);
 
-	// struct timeval t0;
-    // struct timeval t1;
-    // gettimeofday(&t0, 0);
- 	// gettimeofday(&t1, 0);
- 	// long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+	read_file_mat(fname, dim, &mat1, &mat2);
+
+	print_mat(mat1);
+	matrix* A = malloc(sizeof(matrix));
+	A->rows = mat1->rows/2;
+	A->cols = mat1->cols/2;
+	A->data = malloc(A->rows * sizeof(int*));
+	for (int i = 0; i < A->rows; i++) {
+		A->data[i] = mat1->data[i];
+	}
+	print_mat(A);
+	matrix* B = malloc(sizeof(matrix));
+	B->rows = mat1->rows/2;
+	B->cols = mat1->cols/2;
+	B->data = malloc(B->rows * sizeof(int*));
+	for (int i = 0; i < B->rows; i++) {
+		B->data[i] = &mat1->data[i][mat1->cols/2];
+	}
+	print_mat(B);
+	matrix* C = malloc(sizeof(matrix));
+	C->rows = mat1->rows/2;
+	C->cols = mat1->cols/2;
+	C->data = malloc(C->rows * sizeof(int*));
+	for (int i = 0; i < C->rows; i++) {
+		C->data[i] = mat1->data[i] + (sizeof(int) * mat1->rows/2);
+	}
+	print_mat(C);
+	matrix* D = malloc(sizeof(matrix));
+	D->rows = mat1->rows/2;
+	D->cols = mat1->cols/2;
+	D->data = malloc(D->rows * sizeof(int*));
+	for (int i = 0; i < D->rows; i++) {
+		D->data[i] = &mat1->data[i][mat1->cols/2] + (sizeof(int) * mat1->rows/2);
+	}
+	print_mat(D);
+
+ //    gettimeofday(&t0, 0);
+	// matrix* result = mat_mult(mat1, mat2);
+ // 	gettimeofday(&t1, 0);
+ // 	long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+ // 	printf("Operation took %ld microseconds \n", elapsed);
+ // 	print_mat(result);
+
 }
