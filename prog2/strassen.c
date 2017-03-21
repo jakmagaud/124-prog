@@ -115,7 +115,7 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 			A->data[i][j] = mat1->data[i][j];
 		}
 	}
-	print_mat(A);
+	//print_mat(A);
 
 	matrix* B = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = 0; i < (mat1->rows)/2; i++){
@@ -123,7 +123,7 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 			B->data[i][j - (mat1->cols)/2] = mat1->data[i][j];
 		}
 	}
-	print_mat(B);
+	//print_mat(B);
 
 	matrix* C = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = (mat1->rows)/2; i < mat1->rows; i++){
@@ -131,7 +131,7 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 			C->data[i-(mat1->rows)/2][j] = mat1->data[i][j];
 		}
 	}
-	print_mat(C);
+	//print_mat(C);
 
 	matrix* D = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = (mat1->rows)/2; i < mat1->rows; i++){
@@ -139,7 +139,7 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 			D->data[i-(mat1->rows)/2][j-(mat1->cols)/2] = mat1->data[i][j];
 		}
 	}
-	print_mat(D);
+	//print_mat(D);
 
 
 	matrix* E = mat_init((mat2->rows)/2, (mat2->cols)/2);
@@ -148,7 +148,7 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 			E->data[i][j] = mat2->data[i][j];
 		}
 	}
-	print_mat(E);
+	//print_mat(E);
 
 	matrix* F = mat_init((mat2->rows)/2, (mat2->cols)/2);
 	for (int i = 0; i < (mat2->rows)/2; i++){
@@ -156,7 +156,7 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 			F->data[i][j-(mat2 -> cols)/2] = mat2->data[i][j];
 		}
 	}
-	print_mat(F);
+	//print_mat(F);
 
 	matrix* G = mat_init((mat2->rows)/2, (mat2->cols)/2);
 	for (int i = (mat2->rows)/2; i < mat2->rows; i++){
@@ -164,7 +164,7 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 			G->data[i-(mat2 -> rows)/2][j] = mat2->data[i][j];
 		}
 	}
-	print_mat(G);
+	//print_mat(G);
 
 	matrix* H = mat_init((mat2->rows)/2, (mat2->cols)/2);
 	for (int i = (mat2->rows)/2; i < mat2->rows; i++){
@@ -172,7 +172,7 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 			H->data[i-(mat2 -> rows)/2][j-(mat2 -> cols)/2] = mat2->data[i][j];
 		}
 	}
-	print_mat(H);
+	//print_mat(H);
 
 	matrix* P1 = mat_mult(A, mat_add(F, H, 1));
 	matrix* P2 = mat_mult(mat_add(A, B, 0), H);
