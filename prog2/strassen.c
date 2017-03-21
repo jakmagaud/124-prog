@@ -78,7 +78,7 @@ matrix* mat_mult(matrix* mat1, matrix* mat2) {
 }
 
 matrix* strassen_mult(matrix* mat1, matrix* mat2) {
-	if (mat1->rows < CROSSOVER_PT) 
+	if (mat1->rows <= CROSSOVER_PT) 
 		return mat_mult(mat1, mat2);
 
 	bool padQ = 0;
@@ -277,9 +277,11 @@ int main(int argc, char** argv) {
 	// print_mat(D);
 
  //    gettimeofday(&t0, 0);
+	print_mat(mat1);
+	print_mat(mat2);
 	matrix* result = mat_mult(mat1, mat2);
 	print_mat(result);
-	//matrix* result2 = strassen_mult(mat1, mat2, );
+	matrix* result2 = strassen_mult(mat1, mat2);
 	print_mat(result2);
  // 	gettimeofday(&t1, 0);
  // 	long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
