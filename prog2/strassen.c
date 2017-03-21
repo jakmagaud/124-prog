@@ -77,9 +77,10 @@ matrix* mat_mult(matrix* mat1, matrix* mat2) {
 	return result;
 }
 
-matrix* strassen_mult(matrix* mat1, matrix* mat2) {
+matrix* strassen_mult(matrix* mat1, matrix* mat2, bool padQ) {
 	if (mat1->rows < CROSSOVER_PT) 
 		return mat_mult(mat1, mat2);
+	
 	mat1 = mat_pad(mat1);
 	mat2 = mat_pad(mat2);
 
@@ -165,13 +166,26 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 					product->data[i][j] = AEBG[i][j];
 				}
 				else{
-					product->data[i][j] = 
+					product->data[i][j] = AFBH[i][j-(mat2->cols)/2];
+				}
+			}
+			else{
+				if (j < (mat2 -> rows)/2){
+					product-> data[i][j] = CEDG[i-(mat2 -> rows)/2][j];
+				}
+				else{
+					product -> data[i][j] = CFDH[i - (mat2->rows)/2][j-(mat2->cols)/2];
 				}
 			}
 		}
 	}
 
-	return NULL;
+	if (padQ){
+		product->rows = product->rows - 1;
+		product->cols = product->cols - 1;
+	}
+
+	return product;
 }
 
 void read_file_mat(char* fname, int dim, matrix** mat1, matrix** mat2) {
