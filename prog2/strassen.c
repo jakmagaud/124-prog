@@ -279,7 +279,7 @@ int main(int argc, char** argv) {
  //    gettimeofday(&t0, 0);
 	matrix* result = mat_mult(mat1, mat2);
 	print_mat(result);
-	//matrix* result2 = strassen_mult(mat1, mat2, );
+	matrix* result2 = strassen_mult(mat1, mat2);
 	print_mat(result2);
  // 	gettimeofday(&t1, 0);
  // 	long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
