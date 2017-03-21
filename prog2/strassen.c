@@ -77,12 +77,18 @@ matrix* mat_mult(matrix* mat1, matrix* mat2) {
 	return result;
 }
 
-matrix* strassen_mult(matrix* mat1, matrix* mat2, bool padQ) {
+matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 	if (mat1->rows < CROSSOVER_PT) 
 		return mat_mult(mat1, mat2);
 
-	mat_pad(mat1);
-	mat_pad(mat2);
+	bool padQ = 0;
+
+	if (mat1->rows % 2 == 1){
+		mat_pad(mat1);
+		mat_pad(mat2);
+		padQ = 1;
+	}
+	
 
 	matrix* A = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = 0; i < (mat1->rows)/2; i++){
