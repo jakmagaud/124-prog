@@ -61,7 +61,7 @@ void mat_pad(matrix* mat) {
 	}
 
 	mat->rows++;
-	mat->cols++
+	mat->cols++;
 }
 
 matrix* mat_mult(matrix* mat1, matrix* mat2) {
@@ -80,9 +80,9 @@ matrix* mat_mult(matrix* mat1, matrix* mat2) {
 matrix* strassen_mult(matrix* mat1, matrix* mat2, bool padQ) {
 	if (mat1->rows < CROSSOVER_PT) 
 		return mat_mult(mat1, mat2);
-	
-	mat1 = mat_pad(mat1);
-	mat2 = mat_pad(mat2);
+
+	mat_pad(mat1);
+	mat_pad(mat2);
 
 	matrix* A = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = 0; i < (mat1->rows)/2; i++){
@@ -153,9 +153,9 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2, bool padQ) {
 	matrix* CEDG = mat_init((mat2 -> rows)/2, (mat2->cols)/2);
 	matrix* CFDH = mat_init((mat2 -> rows)/2, (mat2->cols)/2);
 
-	AEBG = mat_add(mat_add(P5, P4, 0), mad_add(P2, P6, 1), 1); //P5+P4-(P2-P6)
-	AFBH = mat_add(P1, P2);
-	CEDG = mat_add(P3, P4);
+	AEBG = mat_add(mat_add(P5, P4, 0), mat_add(P2, P6, 1), 1); //P5+P4-(P2-P6)
+	AFBH = mat_add(P1, P2, 0);
+	CEDG = mat_add(P3, P4, 0);
 	CFDH = mat_add(mat_add(P5, P1, 0), mat_add(P3, P7, 0), 1); //P5+P1-P3-P7
 
 	matrix* product = mat_init(mat2->rows, mat2->cols);
@@ -163,18 +163,18 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2, bool padQ) {
 		for (int j = 0; j < mat2 -> cols; j++){
 			if (i < (mat2->rows)/2){
 				if (j < (mat2 -> rows)/2){
-					product->data[i][j] = AEBG[i][j];
+					product->data[i][j] = AEBG->data[i][j];
 				}
 				else{
-					product->data[i][j] = AFBH[i][j-(mat2->cols)/2];
+					product->data[i][j] = AFBH->data[i][j-(mat2->cols)/2];
 				}
 			}
 			else{
 				if (j < (mat2 -> rows)/2){
-					product-> data[i][j] = CEDG[i-(mat2 -> rows)/2][j];
+					product-> data[i][j] = CEDG->data[i-(mat2 -> rows)/2][j];
 				}
 				else{
-					product -> data[i][j] = CFDH[i - (mat2->rows)/2][j-(mat2->cols)/2];
+					product -> data[i][j] = CFDH->data[i - (mat2->rows)/2][j-(mat2->cols)/2];
 				}
 			}
 		}
