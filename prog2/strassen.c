@@ -61,7 +61,7 @@ void mat_pad(matrix* mat) {
 	}
 
 	mat->rows++;
-	mat->cols++;
+	mat->cols++
 }
 
 matrix* mat_mult(matrix* mat1, matrix* mat2) {
@@ -77,11 +77,12 @@ matrix* mat_mult(matrix* mat1, matrix* mat2) {
 	return result;
 }
 
-matrix* strassen_mult(matrix* mat1, matrix* mat2) {
+matrix* strassen_mult(matrix* mat1, matrix* mat2, bool padQ) {
 	if (mat1->rows < CROSSOVER_PT) 
 		return mat_mult(mat1, mat2);
-	// mat1 = mat_pad(mat1);
-	// mat2 = mat_pad(mat2);
+	
+	mat_pad(mat1);
+	mat_pad(mat2);
 
 	matrix* A = mat_init((mat1->rows)/2, (mat1->cols)/2);
 	for (int i = 0; i < (mat1->rows)/2; i++){
@@ -139,7 +140,52 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 		}
 	}
 
-	return NULL;
+	matrix* P1 = mat_mult(A, mat_add(F, H, 1));
+	matrix* P2 = mat_mult(mat_add(A, B, 0), H);
+	matrix* P3 = mat_mult(mat_add(C, D, 0), E);
+	matrix* P4 = mat_mult(D, mat_add(G, E, 1));
+	matrix* P5 = mat_mult(mat_add(A, D, 0), mat_add(E, H, 0));
+	matrix* P6 = mat_mult(mat_add(B, D, 1), mat_add(G, H, 0));
+	matrix* P7 = mat_mult(mat_add(A, C, 1), mat_add(E, F, 0));
+
+	matrix* AEBG = mat_init((mat2 -> rows)/2, (mat2->cols)/2);
+	matrix* AFBH = mat_init((mat2 -> rows)/2, (mat2->cols)/2);
+	matrix* CEDG = mat_init((mat2 -> rows)/2, (mat2->cols)/2);
+	matrix* CFDH = mat_init((mat2 -> rows)/2, (mat2->cols)/2);
+
+	AEBG = mat_add(mat_add(P5, P4, 0), mad_add(P2, P6, 1), 1); //P5+P4-(P2-P6)
+	AFBH = mat_add(P1, P2);
+	CEDG = mat_add(P3, P4);
+	CFDH = mat_add(mat_add(P5, P1, 0), mat_add(P3, P7, 0), 1); //P5+P1-P3-P7
+
+	matrix* product = mat_init(mat2->rows, mat2->cols);
+	for (int i = 0; i < mat2->rows; i++){
+		for (int j = 0; j < mat2 -> cols; j++){
+			if (i < (mat2->rows)/2){
+				if (j < (mat2 -> rows)/2){
+					product->data[i][j] = AEBG[i][j];
+				}
+				else{
+					product->data[i][j] = AFBH[i][j-(mat2->cols)/2];
+				}
+			}
+			else{
+				if (j < (mat2 -> rows)/2){
+					product-> data[i][j] = CEDG[i-(mat2 -> rows)/2][j];
+				}
+				else{
+					product -> data[i][j] = CFDH[i - (mat2->rows)/2][j-(mat2->cols)/2];
+				}
+			}
+		}
+	}
+
+	if (padQ){
+		product->rows = product->rows - 1;
+		product->cols = product->cols - 1;
+	}
+
+	return product;
 }
 
 void read_file_mat(char* fname, int dim, matrix** mat1, matrix** mat2) {
