@@ -51,7 +51,6 @@ matrix* mat_add(matrix* mat1, matrix* mat2, bool sub) {
 
 matrix* mat_add_inplace(matrix* mat1, matrix* mat2, bool sub) {
 	assert(mat1->rows == mat2->rows && mat1->cols == mat2->cols);
-	// matrix* result = mat_init(mat1->rows, mat1->cols);
 
 	for (int i = 0; i < mat1->rows; i++) {
 		for (int j = 0; j < mat1->cols; j++) {
@@ -164,13 +163,13 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 		}
 	}
 
-	matrix* P1 = mat_mult(A, mat_add(F, H, 1));
-	matrix* P2 = mat_mult(mat_add(A, B, 0), H);
-	matrix* P3 = mat_mult(mat_add(C, D, 0), E);
-	matrix* P4 = mat_mult(D, mat_add(G, E, 1));
-	matrix* P5 = mat_mult(mat_add(A, D, 0), mat_add(E, H, 0));
-	matrix* P6 = mat_mult(mat_add(B, D, 1), mat_add(G, H, 0));
-	matrix* P7 = mat_mult(mat_add(A, C, 1), mat_add(E, F, 0));
+	matrix* P1 = strassen_mult(A, mat_add(F, H, 1));
+	matrix* P2 = strassen_mult(mat_add(A, B, 0), H);
+	matrix* P3 = strassen_mult(mat_add(C, D, 0), E);
+	matrix* P4 = strassen_mult(D, mat_add(G, E, 1));
+	matrix* P5 = strassen_mult(mat_add(A, D, 0), mat_add(E, H, 0));
+	matrix* P6 = strassen_mult(mat_add(B, D, 1), mat_add(G, H, 0));
+	matrix* P7 = strassen_mult(mat_add(A, C, 1), mat_add(E, F, 0));
 
 	matrix* AEBG = mat_init((mat2 -> rows)/2, (mat2->cols)/2);
 	matrix* AFBH = mat_init((mat2 -> rows)/2, (mat2->cols)/2);
@@ -205,8 +204,12 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 	}
 
 	if (padQ){
-		product->rows = product->rows - 1;
-		product->cols = product->cols - 1;
+		mat1->rows--;
+		mat1->cols--;
+		mat2->rows--;
+		mat2->cols--;
+		product->rows--;
+		product->cols--;
 	}
 
 	return product;
