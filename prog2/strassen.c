@@ -94,7 +94,7 @@ matrix* mat_mult(matrix* mat1, matrix* mat2) {
 }
 
 matrix* strassen_mult(matrix* mat1, matrix* mat2) {
-	if (mat1->rows <= CROSSOVER_PT) 
+	if (mat1->rows/2 <= CROSSOVER_PT) 
 		return mat_mult(mat1, mat2);
 
 	bool padQ = 0;
@@ -160,27 +160,6 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 		memcpy(&product->data[j][product->rows/2], CFDH->data[j - product->rows/2], sizeof(int) * CFDH->cols);
 	}
 
-	// for (int i = 0; i < mat2->rows; i++){
-	// 	for (int j = 0; j < mat2 -> cols; j++){
-	// 		if (i < (mat2->rows)/2){
-	// 			if (j < (mat2 -> rows)/2){
-	// 				product->data[i][j] = AEBG->data[i][j];
-	// 			}
-	// 			else{
-	// 				product->data[i][j] = AFBH->data[i][j-(mat2->cols)/2];
-	// 			}
-	// 		}
-	// 		else{
-	// 			if (j < (mat2 -> rows)/2){
-	// 				product-> data[i][j] = CEDG->data[i-(mat2 -> rows)/2][j];
-	// 			}
-	// 			else{
-	// 				product -> data[i][j] = CFDH->data[i - (mat2->rows)/2][j-(mat2->cols)/2];
-	// 			}
-	// 		}
-	// 	}
-	// }
-
 	if (padQ){
 		mat1->rows--;
 		mat1->cols--;
@@ -231,12 +210,12 @@ int main(int argc, char** argv) {
 	gettimeofday(&t1, 0);
 	long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 	printf("Regular matrix multiplication took %ld microseconds \n", elapsed);
-	print_mat(result);
+	//print_mat(result);
 
 	gettimeofday(&t0, 0);
 	matrix* result2 = strassen_mult(mat1, mat2);
 	gettimeofday(&t1, 0);
  	elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
  	printf("Strassen matrix multiplication took %ld microseconds \n", elapsed);
-	print_mat(result2);
+	//print_mat(result2);
 }

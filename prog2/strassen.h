@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define CROSSOVER_PT 32
+#define CROSSOVER_PT 16
 
 typedef struct matrix {
 	int** data;
