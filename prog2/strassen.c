@@ -106,63 +106,74 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 	}
 
 	matrix* A = mat_init((mat1->rows)/2, (mat1->cols)/2);
-	for (int i = 0; i < (mat1->rows)/2; i++){
-		for (int j = 0; j < (mat1 -> cols)/2; j++){
-			A->data[i][j] = mat1->data[i][j];
-		}
-	}
-
 	matrix* B = mat_init((mat1->rows)/2, (mat1->cols)/2);
-	for (int i = 0; i < (mat1->rows)/2; i++){
-		for (int j = (mat1 -> cols)/2; j < mat1 -> cols; j++){
-			B->data[i][j - (mat1->cols)/2] = mat1->data[i][j];
-		}
-	}
-
-
 	matrix* C = mat_init((mat1->rows)/2, (mat1->cols)/2);
-	for (int i = (mat1->rows)/2; i < mat1->rows; i++){
-		for (int j = 0; j < (mat1 -> cols)/2; j++){
-			C->data[i-(mat1->rows)/2][j] = mat1->data[i][j];
-		}
-	}
-
 	matrix* D = mat_init((mat1->rows)/2, (mat1->cols)/2);
-	for (int i = (mat1->rows)/2; i < mat1->rows; i++){
-		for (int j = (mat1->cols)/2; j < mat1 -> cols; j++){
-			D->data[i-(mat1->rows)/2][j-(mat1->cols)/2] = mat1->data[i][j];
-		}
-	}
-
-
 	matrix* E = mat_init((mat2->rows)/2, (mat2->cols)/2);
-	for (int i = 0; i < (mat2->rows)/2; i++){
-		for (int j = 0; j < (mat2 -> cols)/2; j++){
-			E->data[i][j] = mat2->data[i][j];
-		}
-	}
-
 	matrix* F = mat_init((mat2->rows)/2, (mat2->cols)/2);
-	for (int i = 0; i < (mat2->rows)/2; i++){
-		for (int j = (mat2 -> cols)/2; j < mat2 -> cols; j++){
-			F->data[i][j-(mat2 -> cols)/2] = mat2->data[i][j];
-		}
-	}
-
 	matrix* G = mat_init((mat2->rows)/2, (mat2->cols)/2);
-	for (int i = (mat2->rows)/2; i < mat2->rows; i++){
-		for (int j = 0; j < (mat2 -> cols)/2; j++){
-			G->data[i-(mat2 -> rows)/2][j] = mat2->data[i][j];
-		}
-	}
-
-
 	matrix* H = mat_init((mat2->rows)/2, (mat2->cols)/2);
-	for (int i = (mat2->rows)/2; i < mat2->rows; i++){
-		for (int j = (mat2->cols)/2; j < mat2 -> cols; j++){
-			H->data[i-(mat2 -> rows)/2][j-(mat2 -> cols)/2] = mat2->data[i][j];
-		}
+	
+	for (int i = 0; i < mat1->rows/2; i++) {
+		memcpy(A->data[i], mat1->data[i], sizeof(int) * mat1->cols/2);
+		memcpy(B->data[i], &mat1->data[i][mat1->cols/2], sizeof(int) * mat1->cols/2);
+		memcpy(E->data[i], mat2->data[i], sizeof(int) * mat2->cols/2);
+		memcpy(F->data[i], &mat2->data[i][mat2->cols/2], sizeof(int) * mat2->cols/2);
 	}
+
+	for (int i = mat1->rows/2; i < mat1->rows; i++) {
+		memcpy(C->data[i - mat1->rows/2], mat1->data[i], sizeof(int) * mat1->cols/2);
+		memcpy(D->data[i - mat1->rows/2], &mat1->data[i][mat1->cols/2], sizeof(int) * mat1->cols/2);
+		memcpy(G->data[i - mat1->rows/2], mat2->data[i], sizeof(int) * mat2->cols/2);
+		memcpy(H->data[i - mat1->rows/2], &mat2->data[i][mat2->cols/2], sizeof(int) * mat2->cols/2);
+	}
+	// for (int i = 0; i < (mat1->rows)/2; i++){
+	// 	for (int j = 0; j < (mat1 -> cols)/2; j++){
+	// 		A->data[i][j] = mat1->data[i][j];
+	// 	}
+	// }
+
+	// for (int i = 0; i < (mat1->rows)/2; i++){
+	// 	for (int j = (mat1 -> cols)/2; j < mat1 -> cols; j++){
+	// 		B->data[i][j - (mat1->cols)/2] = mat1->data[i][j];
+	// 	}
+	// }
+	
+	// for (int i = (mat1->rows)/2; i < mat1->rows; i++){
+	// 	for (int j = 0; j < (mat1 -> cols)/2; j++){
+	// 		C->data[i-(mat1->rows)/2][j] = mat1->data[i][j];
+	// 	}
+	// }
+
+	// for (int i = (mat1->rows)/2; i < mat1->rows; i++){
+	// 	for (int j = (mat1->cols)/2; j < mat1 -> cols; j++){
+	// 		D->data[i-(mat1->rows)/2][j-(mat1->cols)/2] = mat1->data[i][j];
+	// 	}
+	// }
+	
+	// for (int i = 0; i < (mat2->rows)/2; i++){
+	// 	for (int j = 0; j < (mat2 -> cols)/2; j++){
+	// 		E->data[i][j] = mat2->data[i][j];
+	// 	}
+	// }
+
+	// for (int i = 0; i < (mat2->rows)/2; i++){
+	// 	for (int j = (mat2 -> cols)/2; j < mat2 -> cols; j++){
+	// 		F->data[i][j-(mat2 -> cols)/2] = mat2->data[i][j];
+	// 	}
+	// }
+
+	// for (int i = (mat2->rows)/2; i < mat2->rows; i++){
+	// 	for (int j = 0; j < (mat2 -> cols)/2; j++){
+	// 		G->data[i-(mat2 -> rows)/2][j] = mat2->data[i][j];
+	// 	}
+	// }
+
+	// for (int i = (mat2->rows)/2; i < mat2->rows; i++){
+	// 	for (int j = (mat2->cols)/2; j < mat2 -> cols; j++){
+	// 		H->data[i-(mat2 -> rows)/2][j-(mat2 -> cols)/2] = mat2->data[i][j];
+	// 	}
+	// }
 
 	matrix* P1 = strassen_mult(A, mat_add(F, H, 1));
 	matrix* P2 = strassen_mult(mat_add(A, B, 0), H);
