@@ -5,6 +5,7 @@
 #include <sys/time.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
 #include "strassen.h"
 
 matrix* mat_init(int rows, int cols) {
@@ -182,26 +183,36 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 	CFDH = mat_add(mat_add(P5, P1, 0), mat_add(P3, P7, 0), 1); //P5+P1-P3-P7
 
 	matrix* product = mat_init(mat2->rows, mat2->cols);
-	for (int i = 0; i < mat2->rows; i++){
-		for (int j = 0; j < mat2 -> cols; j++){
-			if (i < (mat2->rows)/2){
-				if (j < (mat2 -> rows)/2){
-					product->data[i][j] = AEBG->data[i][j];
-				}
-				else{
-					product->data[i][j] = AFBH->data[i][j-(mat2->cols)/2];
-				}
-			}
-			else{
-				if (j < (mat2 -> rows)/2){
-					product-> data[i][j] = CEDG->data[i-(mat2 -> rows)/2][j];
-				}
-				else{
-					product -> data[i][j] = CFDH->data[i - (mat2->rows)/2][j-(mat2->cols)/2];
-				}
-			}
-		}
+
+	for (int i = 0; i < product->rows/2; i++) {
+		memcpy(product->data[i], AEBG->data[i], sizeof(int) * AEBG->cols);
+		memcpy(&product->data[i][product->rows/2], AFBH->data[i], sizeof(int) * AFBH->cols);
 	}
+	for (int j = product->rows/2; j < product->rows; j++) {
+		memcpy(product->data[j], CEDG->data[j - product->rows/2], sizeof(int) * CEDG->cols);
+		memcpy(&product->data[j][product->rows/2], CFDH->data[j - product->rows/2], sizeof(int) * CFDH->cols);
+	}
+
+	// for (int i = 0; i < mat2->rows; i++){
+	// 	for (int j = 0; j < mat2 -> cols; j++){
+	// 		if (i < (mat2->rows)/2){
+	// 			if (j < (mat2 -> rows)/2){
+	// 				product->data[i][j] = AEBG->data[i][j];
+	// 			}
+	// 			else{
+	// 				product->data[i][j] = AFBH->data[i][j-(mat2->cols)/2];
+	// 			}
+	// 		}
+	// 		else{
+	// 			if (j < (mat2 -> rows)/2){
+	// 				product-> data[i][j] = CEDG->data[i-(mat2 -> rows)/2][j];
+	// 			}
+	// 			else{
+	// 				product -> data[i][j] = CFDH->data[i - (mat2->rows)/2][j-(mat2->cols)/2];
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	if (padQ){
 		mat1->rows--;
@@ -248,7 +259,6 @@ int main(int argc, char** argv) {
 
 	read_file_mat(fname, dim, &mat1, &mat2);
 
-	// print_mat(mat1);
 	// matrix* A = malloc(sizeof(matrix));
 	// A->rows = mat1->rows/2;
 	// A->cols = mat1->cols/2;
@@ -282,16 +292,18 @@ int main(int argc, char** argv) {
 	// }
 	// print_mat(D);
 
- //    gettimeofday(&t0, 0);
-	print_mat(mat1);
-	print_mat(mat2);
+	gettimeofday(&t0, 0);
 	matrix* result = mat_mult(mat1, mat2);
+	gettimeofday(&t1, 0);
+	long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+	printf("Regular matrix multiplication took %ld microseconds \n", elapsed);
 	print_mat(result);
+	gettimeofday(&t0, 0);
 	matrix* result2 = strassen_mult(mat1, mat2);
+	gettimeofday(&t1, 0);
 	print_mat(result2);
- // 	gettimeofday(&t1, 0);
- // 	long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
- // 	printf("Operation took %ld microseconds \n", elapsed);
- // 	print_mat(result);
+ 	elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+ 	printf("Strassen matrix multiplication took %ld microseconds \n", elapsed);
+ 	print_mat(result);
 
 }
