@@ -127,53 +127,6 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 		memcpy(G->data[i - mat1->rows/2], mat2->data[i], sizeof(int) * mat2->cols/2);
 		memcpy(H->data[i - mat1->rows/2], &mat2->data[i][mat2->cols/2], sizeof(int) * mat2->cols/2);
 	}
-	// for (int i = 0; i < (mat1->rows)/2; i++){
-	// 	for (int j = 0; j < (mat1 -> cols)/2; j++){
-	// 		A->data[i][j] = mat1->data[i][j];
-	// 	}
-	// }
-
-	// for (int i = 0; i < (mat1->rows)/2; i++){
-	// 	for (int j = (mat1 -> cols)/2; j < mat1 -> cols; j++){
-	// 		B->data[i][j - (mat1->cols)/2] = mat1->data[i][j];
-	// 	}
-	// }
-	
-	// for (int i = (mat1->rows)/2; i < mat1->rows; i++){
-	// 	for (int j = 0; j < (mat1 -> cols)/2; j++){
-	// 		C->data[i-(mat1->rows)/2][j] = mat1->data[i][j];
-	// 	}
-	// }
-
-	// for (int i = (mat1->rows)/2; i < mat1->rows; i++){
-	// 	for (int j = (mat1->cols)/2; j < mat1 -> cols; j++){
-	// 		D->data[i-(mat1->rows)/2][j-(mat1->cols)/2] = mat1->data[i][j];
-	// 	}
-	// }
-	
-	// for (int i = 0; i < (mat2->rows)/2; i++){
-	// 	for (int j = 0; j < (mat2 -> cols)/2; j++){
-	// 		E->data[i][j] = mat2->data[i][j];
-	// 	}
-	// }
-
-	// for (int i = 0; i < (mat2->rows)/2; i++){
-	// 	for (int j = (mat2 -> cols)/2; j < mat2 -> cols; j++){
-	// 		F->data[i][j-(mat2 -> cols)/2] = mat2->data[i][j];
-	// 	}
-	// }
-
-	// for (int i = (mat2->rows)/2; i < mat2->rows; i++){
-	// 	for (int j = 0; j < (mat2 -> cols)/2; j++){
-	// 		G->data[i-(mat2 -> rows)/2][j] = mat2->data[i][j];
-	// 	}
-	// }
-
-	// for (int i = (mat2->rows)/2; i < mat2->rows; i++){
-	// 	for (int j = (mat2->cols)/2; j < mat2 -> cols; j++){
-	// 		H->data[i-(mat2 -> rows)/2][j-(mat2 -> cols)/2] = mat2->data[i][j];
-	// 	}
-	// }
 
 	matrix* P1 = strassen_mult(A, mat_add(F, H, 1));
 	matrix* P2 = strassen_mult(mat_add(A, B, 0), H);
@@ -196,10 +149,13 @@ matrix* strassen_mult(matrix* mat1, matrix* mat2) {
 	matrix* product = mat_init(mat2->rows, mat2->cols);
 
 	for (int i = 0; i < product->rows/2; i++) {
+		//product->data[i] = AEBG->data[i];
+		//product->data[i][product->rows/2] = *AFBH->data[i];
 		memcpy(product->data[i], AEBG->data[i], sizeof(int) * AEBG->cols);
 		memcpy(&product->data[i][product->rows/2], AFBH->data[i], sizeof(int) * AFBH->cols);
 	}
 	for (int j = product->rows/2; j < product->rows; j++) {
+		//product->data[j] = CEDG->data[j - product->rows/2];
 		memcpy(product->data[j], CEDG->data[j - product->rows/2], sizeof(int) * CEDG->cols);
 		memcpy(&product->data[j][product->rows/2], CFDH->data[j - product->rows/2], sizeof(int) * CFDH->cols);
 	}
@@ -270,51 +226,17 @@ int main(int argc, char** argv) {
 
 	read_file_mat(fname, dim, &mat1, &mat2);
 
-	// matrix* A = malloc(sizeof(matrix));
-	// A->rows = mat1->rows/2;
-	// A->cols = mat1->cols/2;
-	// A->data = malloc(A->rows * sizeof(int*));
-	// for (int i = 0; i < A->rows; i++) {
-	// 	A->data[i] = mat1->data[i];
-	// }
-	// print_mat(A);
-	// matrix* B = malloc(sizeof(matrix));
-	// B->rows = mat1->rows/2;
-	// B->cols = mat1->cols/2;
-	// B->data = malloc(B->rows * sizeof(int*));
-	// for (int i = 0; i < B->rows; i++) {
-	// 	B->data[i] = &mat1->data[i][mat1->cols/2];
-	// }
-	// print_mat(B);
-	// matrix* C = malloc(sizeof(matrix));
-	// C->rows = mat1->rows/2;
-	// C->cols = mat1->cols/2;
-	// C->data = malloc(C->rows * sizeof(int*));
-	// for (int i = 0; i < C->rows; i++) {
-	// 	C->data[i] = mat1->data[i] + (sizeof(int) * mat1->rows/2);
-	// }
-	// print_mat(C);
-	// matrix* D = malloc(sizeof(matrix));
-	// D->rows = mat1->rows/2;
-	// D->cols = mat1->cols/2;
-	// D->data = malloc(D->rows * sizeof(int*));
-	// for (int i = 0; i < D->rows; i++) {
-	// 	D->data[i] = &mat1->data[i][mat1->cols/2] + (sizeof(int) * mat1->rows/2);
-	// }
-	// print_mat(D);
-
 	gettimeofday(&t0, 0);
 	matrix* result = mat_mult(mat1, mat2);
 	gettimeofday(&t1, 0);
 	long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 	printf("Regular matrix multiplication took %ld microseconds \n", elapsed);
 	print_mat(result);
+
 	gettimeofday(&t0, 0);
 	matrix* result2 = strassen_mult(mat1, mat2);
 	gettimeofday(&t1, 0);
-	print_mat(result2);
  	elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
  	printf("Strassen matrix multiplication took %ld microseconds \n", elapsed);
- 	print_mat(result);
-
+	print_mat(result2);
 }
