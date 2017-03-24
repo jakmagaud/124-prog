@@ -60,20 +60,6 @@ matrix* mat_add(matrix* mat1, matrix* mat2, bool sub) {
 	return result;
 }
 
-matrix* mat_add_inplace(matrix* mat1, matrix* mat2, bool sub) {
-	assert(mat1->rows == mat2->rows && mat1->cols == mat2->cols);
-
-	for (int i = 0; i < mat1->rows; i++) {
-		for (int j = 0; j < mat1->cols; j++) {
-			if (!sub)
-				mat1->data[i][j] = mat1->data[i][j] + mat2->data[i][j];
-			else
-				mat1->data[i][j] = mat1->data[i][j] - mat2->data[i][j];
-		}
-	}
-	return mat1;
-}
-
 void mat_pad(matrix* mat) {
 	if (mat->rows % 2 == 0 && mat->rows % 2 == 0)
 		return;
@@ -227,23 +213,22 @@ int main(int argc, char** argv) {
 
 	// printf("Crossover point is %d\n", crossover_pt);
 	// gettimeofday(&t0, 0);
-	matrix* result = mat_mult(mat1, mat2);
+	//matrix* result = mat_mult(mat1, mat2);
 	// gettimeofday(&t1, 0);
 	// long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 	// printf("Regular matrix multiplication took %ld microseconds \n", elapsed);
-	print_mat(result);
+	//print_mat(result);
 
 	//gettimeofday(&t0, 0);
-	matrix* result2 = strassen_mult(mat1, mat2);
-	print_mat(result2);
-	//print_mat_diag(result);
+	matrix* result = strassen_mult(mat1, mat2);
+	//print_mat(result2);
+	print_mat_diag(result);
 	// gettimeofday(&t1, 0);
- // 	elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
- // 	printf("Strassen matrix multiplication took %ld microseconds \n", elapsed);
- // 	printf("\n");
+    // 	elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+    // 	printf("Strassen matrix multiplication took %ld microseconds \n", elapsed);
+    // 	printf("\n");
 
 	mat_destroy(mat1);
 	mat_destroy(mat2);
 	mat_destroy(result);
-	mat_destroy(result2);
 }
