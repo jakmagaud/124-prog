@@ -8,8 +8,6 @@
 #include <string.h>
 #include "strassen.h"
 
-int crossover_pt;
-
 matrix* mat_init(int rows, int cols) {
 	matrix* mat = malloc(sizeof(matrix));
 	mat->rows = rows;
@@ -90,7 +88,7 @@ matrix* mat_mult(matrix* mat1, matrix* mat2) {
 }
 
 matrix* strassen_mult(matrix* mat1, matrix* mat2) {
-	if (mat1->rows/2 <= crossover_pt) 
+	if (mat1->rows <= CROSSOVER_PT) 
 		return mat_mult(mat1, mat2);
 
 	bool padQ = 0;
@@ -201,7 +199,7 @@ void read_file_mat(char* fname, int dim, matrix** mat1, matrix** mat2) {
 
 int main(int argc, char** argv) {
 	//flag options: 0 for no extra stuff
-	crossover_pt = atoi(argv[1]);
+	int flag = atoi(argv[1]);
 	int dim = atoi(argv[2]);
 	char* fname = argv[3];
 	struct timeval t0;
@@ -211,7 +209,6 @@ int main(int argc, char** argv) {
 
 	read_file_mat(fname, dim, &mat1, &mat2);
 
-	// printf("Crossover point is %d\n", crossover_pt);
 	// gettimeofday(&t0, 0);
 	//matrix* result = mat_mult(mat1, mat2);
 	// gettimeofday(&t1, 0);
