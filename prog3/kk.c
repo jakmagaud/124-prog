@@ -11,12 +11,17 @@ int rng(int min, int max) {
 	return rand() % (max + 1 - min) + min;
 }
 
-void rand_solution(solution* solution) {
+solution* rand_solution(void) {
+	solution* solution = malloc(sizeof(solution));
+	solution->arr = malloc(sizeof(unsigned int) * ARR_LEN);
+	solution->signs = malloc(sizeof(unsigned int) * ARR_LEN);
+
 	for (int i = 0; i < ARR_LEN; i++) {
 		solution->signs[i] = rng(0,1);
 		if (solution->signs[i] == 0)
 			solution->signs[i] = -1;
 	}
+	return solution;
 }
 
 int test_solution(solution* sol) {
@@ -27,7 +32,19 @@ int test_solution(solution* sol) {
 	return resid;
 }
 
+solution* repeated_random(void) {
+	solution* current = rand_solution();
+	for (int i = 0; i < MAX_ITER; i++) {
+		solution* random = rand_solution();
+		if (test_solution(random) < test_solution(current))
+			current = random;
+	}
+	return current; 
+}
 
+solution* hill_climb(void) {
+	return NULL;
+}
 
 void read_file_data(char* fname, unsigned int* ret) {
 	FILE* file = fopen(fname, "r");
