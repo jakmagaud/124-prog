@@ -7,68 +7,125 @@
 #include <time.h>
 #include "kk.h"
 
+int arr[ARR_LEN];
+
 int rng(int min, int max) {
 	return rand() % (max + 1 - min) + min;
 }
 
-solution* rand_solution(void) {
-	solution* solution = malloc(sizeof(solution));
-	solution->arr = malloc(sizeof(unsigned int) * ARR_LEN);
-	solution->signs = malloc(sizeof(unsigned int) * ARR_LEN);
-
-	for (int i = 0; i < ARR_LEN; i++) {
-		solution->signs[i] = rng(0,1);
-		if (solution->signs[i] == 0)
-			solution->signs[i] = -1;
-	}
-	return solution;
+int prob_rng(void) {
+	return (double) rand() / (double) ((unsigned) RAND_MAX + 1);
 }
 
-int test_solution(solution* sol) {
+int* rand_solution(void) {
+	int* signs = malloc(sizeof(int) * ARR_LEN);
+
+	for (int i = 0; i < ARR_LEN; i++) {
+		signs[i] = rng(0,1);
+		if (signs[i] == 0)
+			signs[i] = -1;
+	}
+	return signs;
+}
+
+int test_solution(int* sol) {
 	int resid = 0;
 	for (int i = 0; i < ARR_LEN; i++) {
-		resid += sol->signs[i] * sol->arr[i];
+		resid += sol[i] * arr[i];
 	}
 	return resid;
 }
 
-solution* repeated_random(void) {
-	solution* current = rand_solution();
+int* repeated_random(void) {
+	int* current = rand_solution();
 	for (int i = 0; i < MAX_ITER; i++) {
-		solution* random = rand_solution();
+		int* random = rand_solution();
 		if (test_solution(random) < test_solution(current))
 			current = random;
 	}
 	return current; 
 }
 
-solution* hill_climb(void) {
-	return NULL;
+int* hill_climb(void) {
+	int* current = rand_solution();
+	int* tmp = malloc(sizeof(int) * ARR_LEN);
+
+	for (int i = 0; i < MAX_ITER; i++) {
+		memcpy(tmp, current, sizeof(int) * ARR_LEN);
+		int index1 = rng(0, ARR_LEN);
+		int index2 = rng(0, ARR_LEN);
+		while (index1 == index2)
+			index2 = rng(0, ARR_LEN);
+
+		current[index1] *= -1;
+		int rnjesus = rng(0,1);
+		if (rnjesus) {
+			current[index2] *= -1;
+		}
+
+		if (test_solution(tmp) < test_solution(current))
+			current = tmp;
+	}
+	//free(tmp);
+	return current;
 }
 
-void read_file_data(char* fname, unsigned int* ret) {
+double cool_schedule(int i) {
+	return pow(10, 10) * pow(0.8, floor(i / 300));
+}
+
+int* annealing(void) {
+	int* current = rand_solution();
+	int* tmp = malloc(sizeof(int) * ARR_LEN);
+	int* best = malloc(sizeof(int) * ARR_LEN);
+
+	for (int i = 0; i < MAX_ITER; i++) {
+		memcpy(tmp, current, sizeof(int) * ARR_LEN);
+		int index1 = rng(0, ARR_LEN);
+		int index2 = rng(0, ARR_LEN);
+		while (index1 == index2)
+			index2 = rng(0, ARR_LEN);
+
+		current[index1] *= -1;
+		int rnjesus = rng(0,1);
+		if (rnjesus) {
+			current[index2] *= -1;
+		}
+
+		if (test_solution(tmp) < test_solution(current))
+			current = tmp;
+		else {
+			double prob = pow(M_E, -1 * (test_solution(current) - test_solution(tmp))/cool_schedule(i));
+			if (prob < prob_rng())
+				current = tmp;
+		}
+
+		if (test_solution(current) < test_solution(best))
+			best = current;
+	}
+	//free(current);
+	//free(tmp);
+	return best;
+}
+
+void read_file_data(char* fname) {
 	FILE* file = fopen(fname, "r");
 	for (int i = 0; i < ARR_LEN; i++) {
-		fscanf(file, "%d", &ret[i]);
+		fscanf(file, "%d", &arr[i]);
 	}
 	fclose(file);
 }
 
 int main(int argc, char** argv) {
 	srand(time(NULL));
-	unsigned int* ret = malloc(sizeof(unsigned int) * ARR_LEN);
-
-	/*
-	solution* test = malloc(sizeof(solution));
-	test->arr = malloc(sizeof(unsigned int) * 5);
-	test->signs = malloc(sizeof(unsigned int) * 5);
-	test->arr[0] = 10; test->arr[1] = 8; test->arr[2] = 7; test->arr[3] = 6; test->arr[4] = 5;
-	test->signs[0] = -1; test->signs[1] = 1; test->signs[2] = 1; test->signs[3] = -1; test->signs[4] = 1;
-	int resid = test_solution(test);
-	printf("%d\n", resid);
-	*/
+	struct timeval t0;
+    struct timeval t1;
+    // gettimeofday(&t0, 0);
+	// gettimeofday(&t1, 0);
+	// long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+	// printf("Regular matrix multiplication took %ld microseconds \n", elapsed);
 
 	char* fname = argv[1];
-	read_file_data(fname, ret);
+	read_file_data(fname);
 	return 0;
 }
