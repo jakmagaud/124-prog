@@ -33,15 +33,17 @@ int test_solution(int* sol) {
 	for (int i = 0; i < ARR_LEN; i++) {
 		resid += sol[i] * arr[i];
 	}
-	return resid;
+	return abs(resid);
 }
 
 int* repeated_random(void) {
 	int* current = rand_solution();
 	for (int i = 0; i < MAX_ITER; i++) {
 		int* random = rand_solution();
-		if (test_solution(random) < test_solution(current))
-			current = random;
+		if (test_solution(random) < test_solution(current)) {
+			memcpy(current, random, sizeof(int) * ARR_LEN);
+		}
+		//free(random);
 	}
 	return current; 
 }
@@ -63,8 +65,9 @@ int* hill_climb(void) {
 			current[index2] *= -1;
 		}
 
-		if (test_solution(tmp) < test_solution(current))
-			current = tmp;
+		if (test_solution(tmp) < test_solution(current)) {
+			memcpy(current, tmp, sizeof(int) * ARR_LEN);
+		}
 	}
 	//free(tmp);
 	return current;
@@ -93,15 +96,15 @@ int* annealing(void) {
 		}
 
 		if (test_solution(tmp) < test_solution(current))
-			current = tmp;
+			memcpy(current, tmp, sizeof(int) * ARR_LEN);
 		else {
 			double prob = pow(M_E, -1 * (test_solution(current) - test_solution(tmp))/cool_schedule(i));
 			if (prob < prob_rng())
-				current = tmp;
+				memcpy(current, tmp, sizeof(int) * ARR_LEN);
 		}
 
 		if (test_solution(current) < test_solution(best))
-			best = current;
+			memcpy(best, current, sizeof(int) * ARR_LEN);
 	}
 	//free(current);
 	//free(tmp);
@@ -123,9 +126,15 @@ int main(int argc, char** argv) {
     // gettimeofday(&t0, 0);
 	// gettimeofday(&t1, 0);
 	// long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-	// printf("Regular matrix multiplication took %ld microseconds \n", elapsed);
+	// printf("Operation took %ld microseconds \n", elapsed);
 
 	char* fname = argv[1];
 	read_file_data(fname);
+	int* solution = repeated_random();
+	printf("%d\n", test_solution(solution));
+	solution = hill_climb();
+	printf("%d\n", test_solution(solution));
+	solution = annealing();
+	printf("%d\n", test_solution(solution));
 	return 0;
 }
