@@ -7,7 +7,7 @@
 #include <time.h>
 #include "kk.h"
 
-int arr[ARR_LEN];
+unsigned int arr[ARR_LEN];
 
 int rng(int min, int max) {
 	return rand() % (max + 1 - min) + min;

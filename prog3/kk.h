@@ -3,4 +3,4 @@
 #include <stdbool.h>
 
 #define ARR_LEN 100
-#define MAX_ITER 10000
+#define MAX_ITER 25000
