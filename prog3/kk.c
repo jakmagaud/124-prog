@@ -5,6 +5,7 @@
 #include <sys/time.h>
 #include <math.h>
 #include <time.h>
+#include <assert.h>
 #include "kk.h"
 
 unsigned long arr[ARR_LEN];
@@ -36,7 +37,7 @@ int test_solution(int* sol) {
 	return abs(resid);
 }
 
-int* repeated_random(void) {
+int* repeated_random_s(void) {
 	int* current = rand_solution();
 	for (int i = 0; i < MAX_ITER; i++) {
 		int* random = rand_solution();
@@ -48,7 +49,7 @@ int* repeated_random(void) {
 	return current; 
 }
 
-int* hill_climb(void) {
+int* hill_climb_s(void) {
 	int* current = rand_solution();
 	int* tmp = malloc(sizeof(int) * ARR_LEN);
 
@@ -77,7 +78,7 @@ double cool_schedule(int i) {
 	return pow(10, 10) * pow(0.8, floor(i / 300));
 }
 
-int* annealing(void) {
+int* annealing_s(void) {
 	int* current = rand_solution();
 	int* tmp = malloc(sizeof(int) * ARR_LEN);
 	int* best = malloc(sizeof(int) * ARR_LEN);
@@ -98,7 +99,8 @@ int* annealing(void) {
 		if (test_solution(tmp) < test_solution(current))
 			memcpy(current, tmp, sizeof(int) * ARR_LEN);
 		else {
-			double prob = pow(M_E, -1 * (test_solution(current) - test_solution(tmp))/cool_schedule(i));
+			double prob = pow(M_E, -1 * (test_solution(tmp) - test_solution(current))/cool_schedule(i));
+			assert(prob <= 1 && prob >= 0.0);
 			if (prob < prob_rng())
 				memcpy(current, tmp, sizeof(int) * ARR_LEN);
 		}
@@ -130,11 +132,11 @@ int main(int argc, char** argv) {
 
 	char* fname = argv[1];
 	read_file_data(fname);
-	int* solution = repeated_random();
+	int* solution = repeated_random_s();
 	printf("%d\n", test_solution(solution));
-	solution = hill_climb();
+	solution = hill_climb_s();
 	printf("%d\n", test_solution(solution));
-	solution = annealing();
+	solution = annealing_s();
 	printf("%d\n", test_solution(solution));
 	return 0;
 }
