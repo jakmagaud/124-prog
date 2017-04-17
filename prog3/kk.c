@@ -9,7 +9,7 @@
 #include "kk.h"
 
 unsigned long arr[ARR_LEN];
-unsigned long kk_buf[ARR_LEN * 2];
+unsigned long kk_buf[ARR_LEN];
 
 int rng(int min, int max) {
 	return rand() % (max + 1 - min) + min;
@@ -38,14 +38,40 @@ int test_solution(int* sol) {
 	return abs(resid);
 }
 
-int comparison(const void* a, const void* b) {
-   return (*(unsigned long*)a - *(unsigned long*)b);
+void get_max_inds(int* max_ind, int* next_max_ind) {
+	int max = 0;
+	int next_max = 0;
+	*max_ind = *next_max_ind = -1;
+	for (int i = 0; i < ARR_LEN; i++) {
+		if (arr[i] > max) {
+			next_max = max;
+			max = arr[i];
+			*next_max_ind = *max_ind;
+			*max_ind = i;
+		}
+		else if (arr[i] > next_max) {
+			next_max = arr[i];
+			*next_max_ind = i;
+		}
+	}
 }
 
-int* kk(void) {
-	qsort(arr, ARR_LEN, sizeof(unsigned long), comparison);
+int kk(void) {
+	int* solution = malloc(sizeof(int) * ARR_LEN);
 	memcpy(kk_buf, arr, sizeof(unsigned long) * ARR_LEN);
-	return 0;
+	int resid = 0;
+	int max_ind, next_max_ind;
+	while (true) {
+		get_max_inds(&max_ind, &next_max_ind);
+		if (arr[next_max_ind] == 0) {
+			resid = arr[max_ind];
+			break;
+		}
+		resid = arr[max_ind] - arr[next_max_ind];
+		arr[next_max_ind] = 0;
+		arr[max_ind] = resid;
+	}
+	return resid;
 }
 
 int* repeated_random_s(void) {
@@ -143,11 +169,12 @@ int main(int argc, char** argv) {
 
 	char* fname = argv[1];
 	read_file_data(fname);
-	int* solution = repeated_random_s();
-	printf("%d\n", test_solution(solution));
-	solution = hill_climb_s();
-	printf("%d\n", test_solution(solution));
-	solution = annealing_s();
-	printf("%d\n", test_solution(solution));
+	printf("%d\n", kk());
+	// int* solution = repeated_random_s();
+	// printf("%d\n", test_solution(solution));
+	// solution = hill_climb_s();
+	// printf("%d\n", test_solution(solution));
+	// solution = annealing_s();
+	// printf("%d\n", test_solution(solution));
 	return 0;
 }
