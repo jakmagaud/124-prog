@@ -9,6 +9,7 @@
 #include "kk.h"
 
 unsigned long arr[ARR_LEN];
+unsigned long kk_buf[ARR_LEN * 2];
 
 int rng(int min, int max) {
 	return rand() % (max + 1 - min) + min;
@@ -35,6 +36,16 @@ int test_solution(int* sol) {
 		resid += sol[i] * arr[i];
 	}
 	return abs(resid);
+}
+
+int comparison(const void* a, const void* b) {
+   return (*(unsigned long*)a - *(unsigned long*)b);
+}
+
+int* kk(void) {
+	qsort(arr, ARR_LEN, sizeof(unsigned long), comparison);
+	memcpy(kk_buf, arr, sizeof(unsigned long) * ARR_LEN);
+	return 0;
 }
 
 int* repeated_random_s(void) {
