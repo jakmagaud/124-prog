@@ -7,7 +7,7 @@
 #include <time.h>
 #include "kk.h"
 
-unsigned int arr[ARR_LEN];
+unsigned long arr[ARR_LEN];
 
 int rng(int min, int max) {
 	return rand() % (max + 1 - min) + min;
@@ -114,7 +114,7 @@ int* annealing(void) {
 void read_file_data(char* fname) {
 	FILE* file = fopen(fname, "r");
 	for (int i = 0; i < ARR_LEN; i++) {
-		fscanf(file, "%d", &arr[i]);
+		fscanf(file, "%ld", &arr[i]);
 	}
 	fclose(file);
 }
