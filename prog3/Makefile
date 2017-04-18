@@ -7,4 +7,4 @@ kk.o: kk.c kk.h
 	$(CC) -c kk.c
 
 clean:
-	rm -f kk *.o *~
+	rm -f kk *.o *~ *.txt
