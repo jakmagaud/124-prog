@@ -11,6 +11,7 @@
 /* GLOBAL VARIABLES */
 unsigned long arr[ARR_LEN];
 unsigned long hc_buf[ARR_LEN];
+unsigned long an_buf[ARR_LEN];
 unsigned long kk_buf[ARR_LEN];
 
 void print_arr(int *arr);
@@ -236,6 +237,7 @@ int* annealing_p(void) {
 	int* tmp = malloc(sizeof(int) * ARR_LEN);
 	int* best = malloc(sizeof(int) * ARR_LEN);
 	memcpy(best, current, sizeof(int) * ARR_LEN);
+	memcpy(an_buf, arr, sizeof(unsigned long) * ARR_LEN);
 
 	for (int i = 0; i < MAX_ITER; i++) {
 		memcpy(tmp, current, sizeof(int) * ARR_LEN);
@@ -244,7 +246,7 @@ int* annealing_p(void) {
 		while (index1 == index2)
 			index2 = rng(0, ARR_LEN);
 
-		arr[index2] = arr[index1];
+		an_buf[index2] = an_buf[index1];
 		int rnjesus = rng(0,1);
 		if (rnjesus) {
 			int index3 = rng(0, ARR_LEN);
@@ -252,7 +254,7 @@ int* annealing_p(void) {
 			while (index3 == index4)
 				index4 = rng(0, ARR_LEN);
 
-			arr[index4] = arr[index3];
+			an_buf[index4] = an_buf[index3];
 		} 
 
 		if (test_solution_p(tmp) < test_solution_p(current))
@@ -281,7 +283,7 @@ void print_arr(int *arr) {
 }
 
 int main(int argc, char** argv) {
-	srand(time(NULL));
+	srand(69);
 	struct timeval t0;
     struct timeval t1;
     // gettimeofday(&t0, 0);
