@@ -38,38 +38,38 @@ int test_solution(int* sol) {
 	return abs(resid);
 }
 
-void get_max_inds(int* max_ind, int* next_max_ind) {
+void get_max_inds(int* max_ind, int* next_max_ind, unsigned long* array) {
 	int max = 0;
 	int next_max = 0;
 	*max_ind = *next_max_ind = -1;
 	for (int i = 0; i < ARR_LEN; i++) {
-		if (arr[i] > max) {
+		if (array[i] > max) {
 			next_max = max;
-			max = arr[i];
+			max = array[i];
 			*next_max_ind = *max_ind;
 			*max_ind = i;
 		}
-		else if (arr[i] > next_max) {
-			next_max = arr[i];
+		else if (array[i] > next_max) {
+			next_max = array[i];
 			*next_max_ind = i;
 		}
 	}
 }
 
-int kk(void) {
+int kk(unsigned long* array) {
 	int* solution = malloc(sizeof(int) * ARR_LEN);
-	memcpy(kk_buf, arr, sizeof(unsigned long) * ARR_LEN);
+	memcpy(kk_buf, array, sizeof(unsigned long) * ARR_LEN);
 	int resid = 0;
 	int max_ind, next_max_ind;
 	while (true) {
-		get_max_inds(&max_ind, &next_max_ind);
-		if (arr[next_max_ind] == 0) {
-			resid = arr[max_ind];
+		get_max_inds(&max_ind, &next_max_ind, array);
+		if (array[next_max_ind] == 0) {
+			resid = array[max_ind];
 			break;
 		}
-		resid = arr[max_ind] - arr[next_max_ind];
-		arr[next_max_ind] = 0;
-		arr[max_ind] = resid;
+		resid = array[max_ind] - array[next_max_ind];
+		array[next_max_ind] = 0;
+		array[max_ind] = resid;
 	}
 	return resid;
 }
@@ -169,7 +169,7 @@ int main(int argc, char** argv) {
 
 	char* fname = argv[1];
 	read_file_data(fname);
-	printf("%d\n", kk());
+	printf("%d\n", kk(arr));
 	// int* solution = repeated_random_s();
 	// printf("%d\n", test_solution(solution));
 	// solution = hill_climb_s();

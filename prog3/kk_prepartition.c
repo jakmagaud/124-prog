@@ -9,7 +9,7 @@
 #include "kk.h"
 
 unsigned long arr[ARR_LEN];
-unsigned long kk_buf[ARR_LEN * 2];
+unsigned long kk_buf[ARR_LEN];
 
 int rng(int min, int max) {
 	return rand() % (max + 1 - min) + min;
@@ -23,27 +23,55 @@ int* rand_solution(void) {
 	int* P = malloc(sizeof(int) * ARR_LEN);
 
 	for (int i = 0; i < ARR_LEN; i++) 
-		signs[i] = rng(0,ARR_LEN);
+		P[i] = rng(0,ARR_LEN);
 	
-	return signs;
+	return P;
+}
+
+void get_max_inds(int* max_ind, int* next_max_ind, unsigned long* array) {
+	int max = 0;
+	int next_max = 0;
+	*max_ind = *next_max_ind = -1;
+	for (int i = 0; i < ARR_LEN; i++) {
+		if (array[i] > max) {
+			next_max = max;
+			max = array[i];
+			*next_max_ind = *max_ind;
+			*max_ind = i;
+		}
+		else if (array[i] > next_max) {
+			next_max = array[i];
+			*next_max_ind = i;
+		}
+	}
+}
+
+int kk(unsigned long* array) {
+	int* solution = malloc(sizeof(int) * ARR_LEN);
+	memcpy(kk_buf, array, sizeof(unsigned long) * ARR_LEN);
+	int resid = 0;
+	int max_ind, next_max_ind;
+	while (true) {
+		get_max_inds(&max_ind, &next_max_ind, array);
+		if (array[next_max_ind] == 0) {
+			resid = array[max_ind];
+			break;
+		}
+		resid = array[max_ind] - array[next_max_ind];
+		array[next_max_ind] = 0;
+		array[max_ind] = resid;
+	}
+	return resid;
 }
 
 int test_solution(int* sol) {
 	int resid = 0;
-	for (int i = 0; i < ARR_LEN; i++) {
-		resid += sol[i] * arr[i];
-	}
-	return abs(resid);
-}
 
-int comparison(const void* a, const void* b) {
-   return (*(unsigned long*)a - *(unsigned long*)b);
-}
+	unsigned long aPrime[ARR_LEN] = {0};
+	for (int i = 0; i < ARR_LEN; i++)
+		aPrime[sol[i]] += arr[i];
 
-int* kk(void) {
-	qsort(arr, ARR_LEN, sizeof(unsigned long), comparison);
-	memcpy(kk_buf, arr, sizeof(unsigned long) * ARR_LEN);
-	return 0;
+	return kk(aPrime);
 }
 
 int* repeated_random_s(void) {
@@ -66,14 +94,19 @@ int* hill_climb_s(void) {
 		memcpy(tmp, current, sizeof(int) * ARR_LEN);
 		int index1 = rng(0, ARR_LEN);
 		int index2 = rng(0, ARR_LEN);
-		while (index1 == index2)
+		while (index1 == index2 || arr[index1] == arr[index2])
 			index2 = rng(0, ARR_LEN);
 
-		current[index1] *= -1;
+		arr[index2] = arr[index1];
 		int rnjesus = rng(0,1);
 		if (rnjesus) {
-			current[index2] *= -1;
-		}
+			int index3 = rng(0, ARR_LEN);
+			int index4 = rng(0, ARR_LEN);
+			while (index3 == index4 || arr[index3] == arr[index4])
+				index4 = rng(0, ARR_LEN);
+
+			arr[index4] = arr[index3];
+		} 
 
 		if (test_solution(tmp) < test_solution(current)) {
 			memcpy(current, tmp, sizeof(int) * ARR_LEN);
@@ -96,14 +129,19 @@ int* annealing_s(void) {
 		memcpy(tmp, current, sizeof(int) * ARR_LEN);
 		int index1 = rng(0, ARR_LEN);
 		int index2 = rng(0, ARR_LEN);
-		while (index1 == index2)
+		while (index1 == index2 || arr[index1] == arr[index2])
 			index2 = rng(0, ARR_LEN);
 
-		current[index1] *= -1;
+		arr[index2] = arr[index1];
 		int rnjesus = rng(0,1);
 		if (rnjesus) {
-			current[index2] *= -1;
-		}
+			int index3 = rng(0, ARR_LEN);
+			int index4 = rng(0, ARR_LEN);
+			while (index3 == index4 || arr[index3] == arr[index4])
+				index4 = rng(0, ARR_LEN);
+
+			arr[index4] = arr[index3];
+		} 
 
 		if (test_solution(tmp) < test_solution(current))
 			memcpy(current, tmp, sizeof(int) * ARR_LEN);
@@ -141,6 +179,7 @@ int main(int argc, char** argv) {
 
 	char* fname = argv[1];
 	read_file_data(fname);
+	printf("%d\n", kk(arr));
 	int* solution = repeated_random_s();
 	printf("%d\n", test_solution(solution));
 	solution = hill_climb_s();
