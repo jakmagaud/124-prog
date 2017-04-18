@@ -170,11 +170,11 @@ int main(int argc, char** argv) {
 	char* fname = argv[1];
 	read_file_data(fname);
 	printf("%d\n", kk());
-	// int* solution = repeated_random_s();
-	// printf("%d\n", test_solution(solution));
-	// solution = hill_climb_s();
-	// printf("%d\n", test_solution(solution));
-	// solution = annealing_s();
-	// printf("%d\n", test_solution(solution));
+	int* solution = repeated_random_s();
+	printf("%d\n", test_solution(solution));
+	solution = hill_climb_s();
+	printf("%d\n", test_solution(solution));
+	solution = annealing_s();
+	printf("%d\n", test_solution(solution));
 	return 0;
 }
