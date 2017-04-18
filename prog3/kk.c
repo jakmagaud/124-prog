@@ -12,6 +12,8 @@
 unsigned long arr[ARR_LEN];
 unsigned long kk_buf[ARR_LEN];
 
+void print_arr(int *arr);
+
 /* MISCALLANEOUS FUNCTIONS */
 int rng(int min, int max) {
 	return rand() % (max + 1 - min) + min;
@@ -25,7 +27,7 @@ double cool_schedule(int i) {
 	return pow(10, 10) * pow(0.8, floor(i / 300));
 }
 
-int* rand_solution(void) {
+int* rand_solution_s(void) {
 	int* signs = malloc(sizeof(int) * ARR_LEN);
 
 	for (int i = 0; i < ARR_LEN; i++) {
@@ -34,6 +36,15 @@ int* rand_solution(void) {
 			signs[i] = -1;
 	}
 	return signs;
+}
+
+int* rand_solution_p(void) {
+	int* P = malloc(sizeof(int) * ARR_LEN);
+
+	for (int i = 0; i < ARR_LEN; i++) 
+		P[i] = rng(0,ARR_LEN);
+	
+	return P;
 }
 
 void read_file_data(char* fname) {
@@ -102,19 +113,19 @@ int kk(unsigned long* array) {
 
 /* STANDARD REPRESENTATION ALGORITHMS */
 int* repeated_random_s(void) {
-	int* current = rand_solution();
+	int* current = rand_solution_s();
 	for (int i = 0; i < MAX_ITER; i++) {
-		int* random = rand_solution();
+		int* random = rand_solution_s();
 		if (test_solution_s(random) < test_solution_s(current)) {
 			memcpy(current, random, sizeof(int) * ARR_LEN);
 		}
-		//free(random);
+		free(random);
 	}
 	return current; 
 }
 
 int* hill_climb_s(void) {
-	int* current = rand_solution();
+	int* current = rand_solution_s();
 	int* tmp = malloc(sizeof(int) * ARR_LEN);
 
 	for (int i = 0; i < MAX_ITER; i++) {
@@ -134,12 +145,12 @@ int* hill_climb_s(void) {
 			memcpy(current, tmp, sizeof(int) * ARR_LEN);
 		}
 	}
-	//free(tmp);
+	free(tmp);
 	return current;
 }
 
 int* annealing_s(void) {
-	int* current = rand_solution();
+	int* current = rand_solution_s();
 	int* tmp = malloc(sizeof(int) * ARR_LEN);
 	int* best = malloc(sizeof(int) * ARR_LEN);
 
@@ -168,33 +179,33 @@ int* annealing_s(void) {
 		if (test_solution_s(current) < test_solution_s(best))
 			memcpy(best, current, sizeof(int) * ARR_LEN);
 	}
-	//free(current);
-	//free(tmp);
+	free(current);
+	free(tmp);
 	return best;
 }
 
 /* PREPARTITIONING REPRESENTATION ALGORITHMS */
 int* repeated_random_p(void) {
-	int* current = rand_solution();
+	int* current = rand_solution_p();
 	for (int i = 0; i < MAX_ITER; i++) {
-		int* random = rand_solution();
+		int* random = rand_solution_p();
 		if (test_solution_p(random) < test_solution_p(current)) {
 			memcpy(current, random, sizeof(int) * ARR_LEN);
 		}
-		//free(random);
+		free(random);
 	}
 	return current; 
 }
 
 int* hill_climb_p(void) {
-	int* current = rand_solution();
+	int* current = rand_solution_p();
 	int* tmp = malloc(sizeof(int) * ARR_LEN);
 
 	for (int i = 0; i < MAX_ITER; i++) {
 		memcpy(tmp, current, sizeof(int) * ARR_LEN);
 		int index1 = rng(0, ARR_LEN);
 		int index2 = rng(0, ARR_LEN);
-		while (index1 == index2 || arr[index1] == arr[index2])
+		while (index1 == index2)
 			index2 = rng(0, ARR_LEN);
 
 		arr[index2] = arr[index1];
@@ -202,7 +213,7 @@ int* hill_climb_p(void) {
 		if (rnjesus) {
 			int index3 = rng(0, ARR_LEN);
 			int index4 = rng(0, ARR_LEN);
-			while (index3 == index4 || arr[index3] == arr[index4])
+			while (index3 == index4)
 				index4 = rng(0, ARR_LEN);
 
 			arr[index4] = arr[index3];
@@ -212,12 +223,13 @@ int* hill_climb_p(void) {
 			memcpy(current, tmp, sizeof(int) * ARR_LEN);
 		}
 	}
-	//free(tmp);
+	print_arr(current);
+	free(tmp);
 	return current;
 }
 
 int* annealing_p(void) {
-	int* current = rand_solution();
+	int* current = rand_solution_p();
 	int* tmp = malloc(sizeof(int) * ARR_LEN);
 	int* best = malloc(sizeof(int) * ARR_LEN);
 
@@ -225,7 +237,7 @@ int* annealing_p(void) {
 		memcpy(tmp, current, sizeof(int) * ARR_LEN);
 		int index1 = rng(0, ARR_LEN);
 		int index2 = rng(0, ARR_LEN);
-		while (index1 == index2 || arr[index1] == arr[index2])
+		while (index1 == index2)
 			index2 = rng(0, ARR_LEN);
 
 		arr[index2] = arr[index1];
@@ -233,7 +245,7 @@ int* annealing_p(void) {
 		if (rnjesus) {
 			int index3 = rng(0, ARR_LEN);
 			int index4 = rng(0, ARR_LEN);
-			while (index3 == index4 || arr[index3] == arr[index4])
+			while (index3 == index4)
 				index4 = rng(0, ARR_LEN);
 
 			arr[index4] = arr[index3];
@@ -251,9 +263,17 @@ int* annealing_p(void) {
 		if (test_solution_p(current) < test_solution_p(best))
 			memcpy(best, current, sizeof(int) * ARR_LEN);
 	}
-	//free(current);
-	//free(tmp);
+	free(current);
+	free(tmp);
+	print_arr(best);
 	return best;
+}
+
+void print_arr(int *arr) {
+	for (int i = 0; i < ARR_LEN; i++)
+		printf("%d ", arr[i]);
+
+	printf("\n");
 }
 
 int main(int argc, char** argv) {
@@ -267,21 +287,21 @@ int main(int argc, char** argv) {
 
 	char* fname = argv[1];
 	read_file_data(fname);
+	print_arr((int*) arr);
 	printf("Karmarkar-karp solution: %d\n", kk(arr));
-	printf("Standard representation solutions:\n");
-	int* solution = repeated_random_s();
-	printf("Repeated random: %d\n", test_solution_s(solution));
-	solution = hill_climb_s();
-	printf("Hill climb: %d\n", test_solution_s(solution));
-	solution = annealing_s();
-	printf("Annealing: %d\n", test_solution_s(solution));
-
+	// printf("Standard representation solutions:\n");
+	// int* solution = repeated_random_s();
+	// printf("Repeated random: %d\n", test_solution_s(solution));
+	// solution = hill_climb_s();
+	// printf("Hill climb: %d\n", test_solution_s(solution));
+	// solution = annealing_s();
+	// printf("Annealing: %d\n", test_solution_s(solution));
 	printf("Prepartition representation solutions:\n");
-	solution = repeated_random_p();
+	int *solution = repeated_random_p();
 	printf("Repeated random: %d\n", test_solution_p(solution));
 	solution = hill_climb_p();
 	printf("Hill climb: %d\n", test_solution_p(solution));
-	solution = annealing_p();
-	printf("Annealing: %d\n", test_solution_p(solution));
+	// solution = annealing_p();
+	// printf("Annealing: %d\n", test_solution_p(solution));
 	return 0;
 }
