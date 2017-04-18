@@ -9,4 +9,4 @@ double cool_schedule(int i);
 int rng(int min, int max);
 double prob_rng(void);
 
-unsigned long kk(unsigned long* array);
+long kk(long* array);
