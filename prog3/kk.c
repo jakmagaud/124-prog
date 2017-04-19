@@ -10,8 +10,6 @@
 
 /* GLOBAL VARIABLES */
 long arr[ARR_LEN];
-long hc_buf[ARR_LEN];
-long an_buf[ARR_LEN];
 long kk_buf[ARR_LEN];
 
 void print_arr(int *arr);
@@ -76,7 +74,7 @@ long test_solution_p(long* sol) {
 
 /* KARMARKAR-KARP */
 void find_max(long* array, int* max_ind, int ind) {
-	long max = 0;
+	long max = -1;
 	*max_ind = 0;
 	for (int i = 0; i < ARR_LEN; i++) {
 		if (i == ind)
@@ -183,16 +181,10 @@ int* annealing_s(void) {
 /* PREPARTITIONING REPRESENTATION ALGORITHMS */
 long* repeated_random_p(void) {
 	long* current = rand_solution_p();
-	long best = test_solution_p(current);
-	long r;
-	long* random;
 	for (int i = 0; i < MAX_ITER; i++) {
-		random = rand_solution_p();
-		r = test_solution_p(random);
-		printf("%ld\n", r);
-		if (r < best) {
+		long* random = rand_solution_p();
+		if (test_solution_p(random) < test_solution_p(current)) {
 			memcpy(current, random, sizeof(long) * ARR_LEN);
-			best = r;
 		}
 	}
 	//free(random);
@@ -202,25 +194,14 @@ long* repeated_random_p(void) {
 long* hill_climb_p(void) {
 	long* current = rand_solution_p();
 	long* tmp = malloc(sizeof(long) * ARR_LEN);
-	memcpy(hc_buf, arr, sizeof(long) * ARR_LEN);
 
 	for (int i = 0; i < MAX_ITER; i++) {
 		memcpy(tmp, current, sizeof(long) * ARR_LEN);
-		int index1 = rng(0, ARR_LEN - 1);
-		int index2 = rng(0, ARR_LEN - 1);
-		while (index1 == index2)
-			index2 = rng(0, ARR_LEN - 1);
-
-		hc_buf[index2] = hc_buf[index1];
-		int rnjesus = rng(0,1);
-		if (rnjesus) {
-			int index3 = rng(0, ARR_LEN - 1);
-			int index4 = rng(0, ARR_LEN - 1);
-			while (index3 == index4)
-				index4 = rng(0, ARR_LEN - 1);
-
-			hc_buf[index4] = hc_buf[index3];
-		} 
+		int index1 = rng(1, ARR_LEN);
+		int index2 = rng(1, ARR_LEN);
+		while (index1 == index2 || current[index1] == index2)
+			index2 = rng(1, ARR_LEN);
+		current[index1] = index2;
 
 		if (test_solution_p(tmp) < test_solution_p(current)) {
 			memcpy(current, tmp, sizeof(long) * ARR_LEN);
@@ -235,25 +216,14 @@ long* annealing_p(void) {
 	long* tmp = malloc(sizeof(long) * ARR_LEN);
 	long* best = malloc(sizeof(long) * ARR_LEN);
 	memcpy(best, current, sizeof(long) * ARR_LEN);
-	memcpy(an_buf, arr, sizeof(long) * ARR_LEN);
 
 	for (int i = 0; i < MAX_ITER; i++) {
 		memcpy(tmp, current, sizeof(long) * ARR_LEN);
-		int index1 = rng(0, ARR_LEN - 1);
-		int index2 = rng(0, ARR_LEN - 1);
-		while (index1 == index2)
-			index2 = rng(0, ARR_LEN - 1);
-
-		an_buf[index2] = an_buf[index1];
-		int rnjesus = rng(0,1);
-		if (rnjesus) {
-			int index3 = rng(0, ARR_LEN - 1);
-			int index4 = rng(0, ARR_LEN - 1);
-			while (index3 == index4)
-				index4 = rng(0, ARR_LEN - 1);
-
-			an_buf[index4] = an_buf[index3];
-		} 
+		int index1 = rng(1, ARR_LEN);
+		int index2 = rng(1, ARR_LEN);
+		while (index1 == index2 || current[index1] == current[index2])
+			index2 = rng(1, ARR_LEN);
+		current[index1] = index2;
 
 		if (test_solution_p(tmp) < test_solution_p(current))
 			memcpy(current, tmp, sizeof(long) * ARR_LEN);
@@ -287,19 +257,19 @@ int main(int argc, char** argv) {
 	// long* test = malloc(sizeof(long) * 5); test[0] = 1; test[1] = 2; test[2] = 2; test[3] = 4; test[4] = 5;
 	// arr[0] = 10; arr[1] = 8; arr[2] = 7; arr[3] = 6; arr[4] = 5;
 	// printf("%ld\n", test_solution_p(test));
-	// printf("Karmarkar-karp solution: %ld\n", kk(arr));
-	// int* solution = repeated_random_s();
-	// printf("Repeated random: %ld\n", test_solution_s(solution));
-	// solution = hill_climb_s();
-	// printf("Hill climb: %ld\n", test_solution_s(solution));
-	// solution = annealing_s();
-	// printf("Annealing: %ld\n", test_solution_s(solution));
+	printf("Karmarkar-karp solution: %ld\n", kk(arr));
+	int* solution = repeated_random_s();
+	printf("Repeated random: %ld\n", test_solution_s(solution));
+	solution = hill_climb_s();
+	printf("Hill climb: %ld\n", test_solution_s(solution));
+	solution = annealing_s();
+	printf("Annealing: %ld\n", test_solution_s(solution));
 
 	long* solution2 = repeated_random_p();
-	// printf("Prepartition repeated random: %ld\n", test_solution_p(solution2));
-	// solution2 = hill_climb_p();
-	// printf("Prepartition hill climb: %ld\n", test_solution_p(solution2));
-	// solution2 = annealing_p();
-	// printf("Prepartition annealing: %ld\n", test_solution_p(solution2));
+	printf("Prepartition repeated random: %ld\n", test_solution_p(solution2));
+	solution2 = hill_climb_p();
+	printf("Prepartition hill climb: %ld\n", test_solution_p(solution2));
+	solution2 = annealing_p();
+	printf("Prepartition annealing: %ld\n", test_solution_p(solution2));
 	return 0;
 }
