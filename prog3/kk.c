@@ -201,7 +201,8 @@ long* hill_climb_p(void) {
 		int index2 = rng(1, ARR_LEN);
 		while (index1 == index2 || current[index1] == index2)
 			index2 = rng(1, ARR_LEN);
-		current[index1] = index2;
+		assert(index1 != index2 && current[index1] != index2);
+		current[index1 - 1] = index2;
 
 		if (test_solution_p(tmp) < test_solution_p(current)) {
 			memcpy(current, tmp, sizeof(long) * ARR_LEN);
@@ -221,9 +222,10 @@ long* annealing_p(void) {
 		memcpy(tmp, current, sizeof(long) * ARR_LEN);
 		int index1 = rng(1, ARR_LEN);
 		int index2 = rng(1, ARR_LEN);
-		while (index1 == index2 || current[index1] == current[index2])
+		while (index1 == index2 || current[index1] == index2)
 			index2 = rng(1, ARR_LEN);
-		current[index1] = index2;
+		assert(index1 != index2 && current[index1] != index2);
+		current[index1 - 1] = index2;
 
 		if (test_solution_p(tmp) < test_solution_p(current))
 			memcpy(current, tmp, sizeof(long) * ARR_LEN);
