@@ -69,7 +69,7 @@ long test_solution_s(int* sol) {
 long test_solution_p(long* sol) {
 	long* aPrime = calloc(1, sizeof(long) * ARR_LEN);
 	for (int i = 0; i < ARR_LEN; i++)
-		aPrime[sol[i]] += arr[i];
+		aPrime[sol[i]-1] += arr[i];
 
 	return kk(aPrime);
 }
@@ -187,13 +187,18 @@ int* annealing_s(void) {
 /* PREPARTITIONING REPRESENTATION ALGORITHMS */
 long* repeated_random_p(void) {
 	long* current = rand_solution_p();
+	long best = test_solution_p(current);
+	long r;
+	long* random;
 	for (int i = 0; i < MAX_ITER; i++) {
-		long* random = rand_solution_p();
-		if (test_solution_p(random) < test_solution_p(current)) {
+		random = rand_solution_p();
+		r = test_solution_p(random);
+		if (r < best) {
 			memcpy(current, random, sizeof(long) * ARR_LEN);
+			best = r;
 		}
-		//free(random);
 	}
+	//free(random);
 	return current; 
 }
 
@@ -270,12 +275,6 @@ long* annealing_p(void) {
 	return best;
 }
 
-void print_arr(int *arr) {
-	for (int i = 0; i < ARR_LEN; i++)
-		printf("%d ", arr[i]);
-	printf("\n");
-}
-
 int main(int argc, char** argv) {
 	srand(69);
 	struct timeval t0;
@@ -287,6 +286,10 @@ int main(int argc, char** argv) {
 
 	char* fname = argv[1];
 	read_file_data(fname);
+
+	// long* test = malloc(sizeof(long) * 5); test[0] = 1; test[1] = 2; test[2] = 2; test[3] = 4; test[4] = 5;
+	// arr[0] = 10; arr[1] = 8; arr[2] = 7; arr[3] = 6; arr[4] = 5;
+	// printf("%ld\n", test_solution_p(test));
 	printf("Karmarkar-karp solution: %ld\n", kk(arr));
 	int* solution = repeated_random_s();
 	printf("Repeated random: %ld\n", test_solution_s(solution));
@@ -296,10 +299,10 @@ int main(int argc, char** argv) {
 	printf("Annealing: %ld\n", test_solution_s(solution));
 
 	long* solution2 = repeated_random_p();
-	printf("Prepartition repeated random: %lu\n", test_solution_p(solution2));
+	printf("Prepartition repeated random: %ld\n", test_solution_p(solution2));
 	solution2 = hill_climb_p();
-	printf("Prepartition hill climb: %lu\n", test_solution_p(solution2));
+	printf("Prepartition hill climb: %ld\n", test_solution_p(solution2));
 	solution2 = annealing_p();
-	printf("Prepartition annealing: %lu\n", test_solution_p(solution2));
+	printf("Prepartition annealing: %ld\n", test_solution_p(solution2));
 	return 0;
 }
