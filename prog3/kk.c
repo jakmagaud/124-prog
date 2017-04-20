@@ -14,8 +14,6 @@ long kk_buf[ARR_LEN];
 
 void print_arr(int *arr);
 
-bool final = false;
-
 /* MISCALLANEOUS FUNCTIONS */
 int rng(int min, int max) {
 	return rand() % (max + 1 - min) + min;
@@ -71,11 +69,6 @@ long test_solution_p(long* sol) {
 	for (int i = 0; i < ARR_LEN; i++)
 		aPrime[sol[i]-1] += arr[i];
 
-	if (final) {
-		FILE *fp = fopen("test.txt", "w");
-		for (int i = 0; i < ARR_LEN; i++)
-			fprintf(fp, "%ld\n", aPrime[i]);
-	}
 	return kk(aPrime);
 }
 
@@ -277,6 +270,8 @@ int main(int argc, char** argv) {
 	read_file_data(fname);
 
 	FILE *data = fopen("data.csv", "a");
+
+	// if first file, print headers
 	if (strcmp(fname,"data/nums0.txt") == 0) {
 		fprintf(data, "KK, Time, Repeated Random S, Time, Hill Climb S, Time, Annealing S, Time, \
 				 Repeated Random P, Time, Hill Climb P, Time, Annealing P, Time\n");
@@ -292,8 +287,6 @@ int main(int argc, char** argv) {
 	gettimeofday(&t1, 0);
 	long kk_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 
-	//printf("Karmarkar-karp solution: %ld\n", kk(arr));
-
 	/*~~~SIGNS~~~*/
 	/* repeated random */
     gettimeofday(&t0, 0);
@@ -301,7 +294,6 @@ int main(int argc, char** argv) {
 	gettimeofday(&t1, 0);
 	long repeated_random_s_sol = test_solution_s(solution);
 	long repeated_random_s_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-	//printf("Repeated random: %ld\n", test_solution_s(solution));
 
 	/* hill climbing */
   	gettimeofday(&t0, 0);
@@ -309,7 +301,6 @@ int main(int argc, char** argv) {
 	gettimeofday(&t1, 0);
 	long hill_climb_s_sol = test_solution_s(solution);
 	long hill_climb_s_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-	//printf("Hill climb: %ld\n", test_solution_s(solution));
 
 	/* annealing */
   	gettimeofday(&t0, 0);
@@ -327,7 +318,6 @@ int main(int argc, char** argv) {
 	gettimeofday(&t1, 0);
 	long repeated_random_p_sol = test_solution_p(solution2);
 	long repeated_random_p_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-	//printf("Repeated random: %ld\n", test_solution_s(solution));
 
 	/* hill climbing */
   	gettimeofday(&t0, 0);
@@ -335,7 +325,6 @@ int main(int argc, char** argv) {
 	gettimeofday(&t1, 0);
 	long hill_climb_p_sol = test_solution_p(solution2);
 	long hill_climb_p_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-	//printf("Hill climb: %ld\n", test_solution_s(solution));
 
 	/* annealing */
   	gettimeofday(&t0, 0);
