@@ -14,6 +14,9 @@ long kk_buf[ARR_LEN];
 
 void print_arr(int *arr);
 
+// toggle modes between generating data and output requested in spec
+bool generating_data = false;
+
 /* MISCALLANEOUS FUNCTIONS */
 int rng(int min, int max) {
 	return rand() % (max + 1 - min) + min;
@@ -92,9 +95,6 @@ long kk(long* array) {
 	int max_ind, next_max_ind;
 	int a = 0;
 	while (true) {
-		if (final){
-			a++;
-		}
 		find_max(kk_buf, &max_ind, -1);
 		find_max(kk_buf, &next_max_ind, max_ind);
 		if (kk_buf[next_max_ind] == 0) {
@@ -108,8 +108,6 @@ long kk(long* array) {
 		// 	printf("[%ld, %ld] ", kk_buf[max_ind], kk_buf[next_max_ind]);
 		kk_buf[next_max_ind] = 0;
 		kk_buf[max_ind] = resid;
-
-		if (final) printf("%d\n", a);
 
 		// if (final)
 		// 	printf("%ld, %ld\n", resid, old_resid);
@@ -269,76 +267,84 @@ int main(int argc, char** argv) {
 	char* fname = argv[1];
 	read_file_data(fname);
 
-	FILE *data = fopen("data.csv", "a");
-
-	// if first file, print headers
-	if (strcmp(fname,"data/nums0.txt") == 0) {
-		fprintf(data, "KK, Time, Repeated Random S, Time, Hill Climb S, Time, Annealing S, Time, \
-				 Repeated Random P, Time, Hill Climb P, Time, Annealing P, Time\n");
-	}
-
 	// long* test = malloc(sizeof(long) * 5); test[0] = 1; test[1] = 2; test[2] = 2; test[3] = 4; test[4] = 5;
 	// arr[0] = 10; arr[1] = 8; arr[2] = 7; arr[3] = 6; arr[4] = 5;
 	// printf("%ld\n", test_solution_p(test));
 
-	/*~~~KK~~~~*/
-    gettimeofday(&t0, 0);
-	long kk_sol = kk(arr);
-	gettimeofday(&t1, 0);
-	long kk_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+	if (generating_data) {
 
-	/*~~~SIGNS~~~*/
-	/* repeated random */
-    gettimeofday(&t0, 0);
-	int* solution = repeated_random_s();
-	gettimeofday(&t1, 0);
-	long repeated_random_s_sol = test_solution_s(solution);
-	long repeated_random_s_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+		FILE *data = fopen("data.csv", "a");
 
-	/* hill climbing */
-  	gettimeofday(&t0, 0);
-	solution = hill_climb_s();
-	gettimeofday(&t1, 0);
-	long hill_climb_s_sol = test_solution_s(solution);
-	long hill_climb_s_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+		// if first file, print headers
+		if (strcmp(fname,"data/nums0.txt") == 0) {
+			fprintf(data, "KK, Time, Repeated Random S, Time, Hill Climb S, Time, Annealing S, Time, \
+					 Repeated Random P, Time, Hill Climb P, Time, Annealing P, Time\n");
+		}
+		/*~~~KK~~~~*/
+	    gettimeofday(&t0, 0);
+		long kk_sol = kk(arr);
+		gettimeofday(&t1, 0);
+		long kk_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 
-	/* annealing */
-  	gettimeofday(&t0, 0);
-	solution = annealing_s();
-	gettimeofday(&t1, 0);
-	long annealing_s_sol = test_solution_s(solution);
-	long annealing_s_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+		/*~~~SIGNS~~~*/
+		/* repeated random */
+	    gettimeofday(&t0, 0);
+		int* solution = repeated_random_s();
+		gettimeofday(&t1, 0);
+		long repeated_random_s_sol = test_solution_s(solution);
+		long repeated_random_s_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 
-	free(solution);
+		/* hill climbing */
+	  	gettimeofday(&t0, 0);
+		solution = hill_climb_s();
+		gettimeofday(&t1, 0);
+		long hill_climb_s_sol = test_solution_s(solution);
+		long hill_climb_s_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 
-	/*~~~PREPARTITIONING~~~*/
-	/* repeated random */
-    gettimeofday(&t0, 0);
-	long* solution2 = repeated_random_p();
-	gettimeofday(&t1, 0);
-	long repeated_random_p_sol = test_solution_p(solution2);
-	long repeated_random_p_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+		/* annealing */
+	  	gettimeofday(&t0, 0);
+		solution = annealing_s();
+		gettimeofday(&t1, 0);
+		long annealing_s_sol = test_solution_s(solution);
+		long annealing_s_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 
-	/* hill climbing */
-  	gettimeofday(&t0, 0);
-	solution2 = hill_climb_p();
-	gettimeofday(&t1, 0);
-	long hill_climb_p_sol = test_solution_p(solution2);
-	long hill_climb_p_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+		free(solution);
 
-	/* annealing */
-  	gettimeofday(&t0, 0);
-	solution2 = annealing_p();
-	gettimeofday(&t1, 0);
-	long annealing_p_sol = test_solution_p(solution2);
-	long annealing_p_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+		/*~~~PREPARTITIONING~~~*/
+		/* repeated random */
+	    gettimeofday(&t0, 0);
+		long* solution2 = repeated_random_p();
+		gettimeofday(&t1, 0);
+		long repeated_random_p_sol = test_solution_p(solution2);
+		long repeated_random_p_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 
-	free(solution2);
+		/* hill climbing */
+	  	gettimeofday(&t0, 0);
+		solution2 = hill_climb_p();
+		gettimeofday(&t1, 0);
+		long hill_climb_p_sol = test_solution_p(solution2);
+		long hill_climb_p_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
 
-	fprintf(data, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", kk_sol, kk_time, 
-		repeated_random_s_sol, repeated_random_s_time, hill_climb_s_sol, hill_climb_s_time,
-		annealing_s_sol, annealing_s_time, repeated_random_p_sol, repeated_random_p_time,
-		hill_climb_p_sol,hill_climb_p_time, annealing_p_sol, annealing_p_time);
+		/* annealing */
+	  	gettimeofday(&t0, 0);
+		solution2 = annealing_p();
+		gettimeofday(&t1, 0);
+		long annealing_p_sol = test_solution_p(solution2);
+		long annealing_p_time = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+
+		free(solution2);
+
+		fprintf(data, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", kk_sol, kk_time, 
+			repeated_random_s_sol, repeated_random_s_time, hill_climb_s_sol, hill_climb_s_time,
+			annealing_s_sol, annealing_s_time, repeated_random_p_sol, repeated_random_p_time,
+			hill_climb_p_sol,hill_climb_p_time, annealing_p_sol, annealing_p_time);
+
+		fclose(data);
+	}
+
+	else
+		printf("%ld\n", kk(arr)); 
+
 
 	return 0;
 }
