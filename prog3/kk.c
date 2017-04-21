@@ -12,8 +12,6 @@
 long arr[ARR_LEN];
 long kk_buf[ARR_LEN];
 
-void print_arr(int *arr);
-
 /* MISCALLANEOUS FUNCTIONS */
 int rng(int min, int max) {
 	return rand() % (max + 1 - min) + min;
@@ -262,9 +260,6 @@ int main(int argc, char** argv) {
 	srand((int) time(NULL));
 	struct timeval t0;
     struct timeval t1;
-	// gettimeofday(&t1, 0);
-	// long elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-	// printf("Operation took %ld microseconds \n", elapsed);
 
 	char* fname = argv[1];
 	read_file_data(fname);
@@ -276,10 +271,6 @@ int main(int argc, char** argv) {
 		fprintf(data, "KK, Time, Repeated Random S, Time, Hill Climb S, Time, Annealing S, Time, \
 				 Repeated Random P, Time, Hill Climb P, Time, Annealing P, Time\n");
 	}
-
-	// long* test = malloc(sizeof(long) * 5); test[0] = 1; test[1] = 2; test[2] = 2; test[3] = 4; test[4] = 5;
-	// arr[0] = 10; arr[1] = 8; arr[2] = 7; arr[3] = 6; arr[4] = 5;
-	// printf("%ld\n", test_solution_p(test));
 
 	/*~~~KK~~~~*/
     gettimeofday(&t0, 0);
